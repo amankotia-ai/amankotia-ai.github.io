@@ -39,7 +39,7 @@
   /* Case study page after revelatio.studio's project format: one plain title sentence and a
      category line; then the media column on the left with the sticky accordion panel on the
      right, where all of the case study's text lives; then next projects, a centred contact
-     block, the "let's build" rows and the ASCII footer. The whole page inverts between black
+     block and the "let's build" rows. The whole page inverts between black
      and white as sections cross the middle of the window. Type is this site's own system. */
   /* The page draws edge to edge (viewport-fit=cover), so the margins keep clear of a phone's notch,
      status bar and home indicator wherever those insets are larger. */
@@ -239,20 +239,6 @@
   .row svg { width: 11px; height: 11px; transition: transform .5s cubic-bezier(.68, -0.55, .27, 1.55); }
   .row:hover svg { transform: rotate(45deg); }
 
-  /* Footer: the name in falling ASCII, then the columns. Always black. */
-  footer { background: #000; color: #fff; }
-  .foot { border-top: 1px solid rgba(255, 255, 255, 0.16); display: flex; flex-direction: column; gap: 32px; padding-bottom: calc(32px + env(safe-area-inset-bottom)); }
-  .ascii { position: relative; width: 100%; height: 30vw; max-height: 480px; min-height: 180px; overflow: hidden; cursor: pointer; }
-  .ascii canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-  .foot-grid { display: flex; justify-content: space-between; gap: 40px; padding: 16px 0; font: 300 12px/1.4 var(--mono); text-transform: uppercase; }
-  .foot-col { display: flex; flex-direction: column; gap: 11px; }
-  .foot-col .k { color: rgba(255, 255, 255, 0.64); }
-  .foot-cols { display: flex; gap: 110px; }
-  .foot-link { opacity: 0.6; transition: opacity .5s ease; }
-  .foot-cols .foot-col:hover .foot-link { opacity: 0.3; }
-  .foot-cols .foot-col .foot-link:hover { opacity: 0.6; }
-  .foot-grid.down { padding: 0; }
-
   @media (max-width: 991px) {
     .hero-head { max-width: 100%; }
     .title { font-size: 4.2vw; }
@@ -280,9 +266,6 @@
     .cards { grid-template-columns: 1fr; gap: 36px; }
     .contact-in { gap: 40px; }
     .rows { width: 100%; }
-    .foot-grid { flex-direction: column; gap: 24px; }
-    .foot-cols { justify-content: space-between; gap: 24px; }
-    .foot-grid.down { flex-direction: row; justify-content: space-between; }
   }
 </style>
 </head>
@@ -321,7 +304,7 @@
   <a class="name" href="../../">( <b>Abhishek Mankotia</b> )</a>
   <nav class="top-menu" aria-label="Secondary">
     <a class="item" href="../../#about">About</a>
-    <a class="item" href="../../#contact">Contact</a>
+    <a class="item" href="../../contact/">Contact</a>
   </nav>
 </header>
 
@@ -436,7 +419,7 @@
     </div>
     <div class="contact-act">
       <div class="who"><img src="media/avatar.jpg" alt=""><div>Abhishek Mankotia<span>Product designer and engineer</span></div></div>
-      <a class="btn" href="../../#contact">Let's talk</a>
+      <a class="btn" href="../../contact/">Let's talk</a>
     </div>
   </div>
 </section>
@@ -447,28 +430,15 @@
     <div class="build-row">
       <h2 class="h-big">Let's build <b>something</b> together</h2>
       <div class="rows">
-        <a class="row" href="../../#contact">Start a project <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M1 9L9 1M3 1h6v6"/></svg></a>
-        <a class="row" href="../../#about">Ask about availability <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M1 9L9 1M3 1h6v6"/></svg></a>
-        <a class="row" href="../../#contact">Say hi <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M1 9L9 1M3 1h6v6"/></svg></a>
+        <a class="row" href="../../contact/">Start a project <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M1 9L9 1M3 1h6v6"/></svg></a>
+        <a class="row" href="../../contact/">Ask about availability <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M1 9L9 1M3 1h6v6"/></svg></a>
+        <a class="row" href="../../contact/">Say hi <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M1 9L9 1M3 1h6v6"/></svg></a>
       </div>
     </div>
   </div>
 </section>
 </main>
 
-<footer>
-  <div class="wrap foot">
-    <div class="ascii" id="ascii" title="Click to scatter"><canvas aria-hidden="true"></canvas></div>
-    <div class="foot-grid">
-      <div class="foot-col"><span class="k">Location</span><span>Bengaluru, India</span></div>
-      <div class="foot-cols">
-        <div class="foot-col"><a class="foot-link" href="../../#work">Work</a><a class="foot-link" href="../../#archive">Archive</a><a class="foot-link" href="../../#about">About</a><a class="foot-link" href="../../#contact">Contact</a></div>
-        <div class="foot-col"><a class="foot-link" href="#">Instagram</a><a class="foot-link" href="#">X</a><a class="foot-link" href="#">LinkedIn</a></div>
-      </div>
-    </div>
-    <div class="foot-grid down"><span>© Abhishek Mankotia 2026</span><a class="foot-link" href="#">Privacy notice</a></div>
-  </div>
-</footer>
 </div>
 
 <script>
@@ -691,76 +661,6 @@
   const yourCode = (yourZone.split('/')[1] || yourZone).replace(/_/g, ' ');
   const clock = () => { const d = new Date(); you.textContent = `Your time (${yourCode}) ${fmt(yourZone).format(d)}`; me.textContent = `My time (Bengaluru) ${fmt('Asia/Kolkata').format(d)}`; };
   clock(); setInterval(clock, 1000);
-
-  // Footer: the name set in ASCII characters that fall in and form once the footer is in view,
-  // scatter on click, and shy away from the pointer.
-  (() => {
-    const box = document.getElementById('ascii'), canvas = box.querySelector('canvas'), ctx = canvas.getContext('2d');
-    const CHARS = '01#@&ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    let parts = [], dpr = 1, W = 0, H = 0, cell = 14, state = 'idle', t0 = 0, mouse = { x: -1e4, y: -1e4 }, raf = 0, visible = false;
-    function build() {
-      dpr = Math.min(devicePixelRatio || 1, 2);
-      W = box.clientWidth; H = box.clientHeight;
-      if (!W || !H) return;   // not laid out yet (a hidden window); the resize handler builds it later
-      canvas.width = W * dpr; canvas.height = H * dpr;
-      const off = document.createElement('canvas'), o = off.getContext('2d');
-      off.width = W; off.height = H;
-      const text = innerWidth <= 767 ? 'AM' : 'ABHISHEK MANKOTIA';
-      cell = Math.max(6, Math.round(innerWidth <= 767 ? W / 40 : W / 110));
-      o.fillStyle = '#fff'; o.textBaseline = 'middle'; o.textAlign = 'left';
-      let size = H * 0.9;
-      o.font = `700 ${size}px ${getComputedStyle(document.body).getPropertyValue('--display')}`;
-      const w = o.measureText(text).width;
-      if (w > W - cell * 2) { size *= (W - cell * 2) / w; o.font = `700 ${size}px ${getComputedStyle(document.body).getPropertyValue('--display')}`; }
-      o.fillText(text, cell, H * 0.52);
-      const data = o.getImageData(0, 0, W, H).data;
-      parts = [];
-      for (let y = cell / 2; y < H; y += cell) for (let x = cell / 2; x < W; x += cell) {
-        if (data[(Math.floor(y) * W + Math.floor(x)) * 4 + 3] > 50) {
-          parts.push({ tx: x, ty: y, x: x + (Math.random() - 0.5) * 140, y: y + (Math.random() - 0.5) * 140, vx: 0, vy: 0, c: CHARS[Math.random() * CHARS.length | 0], d: (parts.length % 20) / 20 * 550, ox: 0, oy: 0 });
-        }
-      }
-      if (still) { state = 'done'; parts.forEach(p => { p.x = p.tx; p.y = p.ty; }); }
-    }
-    function fall() { state = 'fall'; t0 = performance.now(); parts.forEach(p => { p.vy = 0.5 + Math.random() * 2; p.vx = (Math.random() - 0.5) * 5; p.sx = p.x; p.sy = p.y; }); }
-    function form() { state = 'form'; t0 = performance.now(); parts.forEach(p => { p.sx = p.x; p.sy = p.y; }); }
-    function spread() { state = 'spread'; t0 = performance.now(); parts.forEach(p => { p.sx = p.x; p.sy = p.y; p.gx = p.tx + (Math.random() - 0.5) * 140; p.gy = p.ty + (Math.random() - 0.5) * 140; }); }
-    function draw(now) {
-      raf = 0;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.clearRect(0, 0, W, H);
-      ctx.font = `${cell}px Menlo, Monaco, "Courier New", monospace`; ctx.fillStyle = '#fff'; ctx.textBaseline = 'middle'; ctx.textAlign = 'center';
-      const el = now - t0;
-      for (const p of parts) {
-        if (state === 'idle') { p.x += Math.sin(now / 900 + p.tx) * 0.03; p.y += Math.cos(now / 900 + p.ty) * 0.03; }
-        else if (state === 'fall') { p.vy += 0.7; p.x += p.vx; p.y += p.vy; if (p.y > H - cell / 2) { p.y = H - cell / 2; p.vy *= -0.25; p.vx *= 0.8; } if (el > 1200) form(); }
-        else if (state === 'form') { const t = Math.min(Math.max((el - p.d) / 1100, 0), 1), e = 1 - Math.pow(1 - t, 3); p.x = p.sx + (p.tx - p.sx) * e; p.y = p.sy + (p.ty - p.sy) * e; }
-        else if (state === 'spread') { const t = Math.min(Math.max((el - p.d) / 1100, 0), 1), e = 1 - Math.pow(1 - t, 3); p.x = p.sx + (p.gx - p.sx) * e; p.y = p.sy + (p.gy - p.sy) * e; }
-        // Shy of the pointer.
-        const dx = p.x + p.ox - mouse.x, dy = p.y + p.oy - mouse.y, d = Math.hypot(dx, dy);
-        if (d < 120 && d > 0) { const f = Math.pow(1 - d / 120, 2) * 28; p.ox += dx / d * f * 0.2; p.oy += dy / d * f * 0.2; if (Math.random() < 0.06) p.c = CHARS[Math.random() * CHARS.length | 0]; }
-        p.ox *= 0.92; p.oy *= 0.92;
-        if (Math.random() < 0.015) p.c = CHARS[Math.random() * CHARS.length | 0];
-        ctx.fillText(p.c, p.x + p.ox, p.y + p.oy);
-      }
-      if (state === 'form' && el > 1100 + 550) { state = 'done'; parts.forEach(p => { p.x = p.tx; p.y = p.ty; }); }
-      if (state === 'spread' && el > 1100 + 550) state = 'idle';
-      if (visible) raf = requestAnimationFrame(draw);
-    }
-    const start = () => { if (!raf && visible) raf = requestAnimationFrame(draw); };
-    new IntersectionObserver(entries => entries.forEach(en => {
-      visible = en.isIntersecting;
-      if (visible && !parts.length) build();   // first laid out at zero width: build now that it shows
-      if (en.intersectionRatio >= 0.8 && state === 'idle' && !still) fall();
-      start();
-    }), { threshold: [0, 0.25, 0.5, 0.75, 0.8] }).observe(box);
-    box.addEventListener('click', () => { if (state === 'done') spread(); else if (state === 'idle') fall(); });
-    box.addEventListener('pointermove', e => { const r = box.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; });
-    box.addEventListener('pointerleave', () => { mouse.x = mouse.y = -1e4; });
-    let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { build(); if (state !== 'idle') { state = 'done'; parts.forEach(p => { p.x = p.tx; p.y = p.ty; }); } }, 100); });
-    document.fonts.ready.then(build);
-    build();
-  })();
 
   // The finish's grain, as on lightweight.info: a 128 px tile of random grey at 12/255 (10 on
   // phones), re-rolled every 8 frames and repeated over a window-sized canvas in CSS pixels. It is

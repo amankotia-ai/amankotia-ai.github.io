@@ -1,4 +1,4 @@
-# Publish only the page, its video, its media and the case studies; everything else here stays local.
+# Publish only the page, its video, its media, the case studies and the contact page; everything else here stays local.
 *
 !.gitignore
 !index.html
@@ -8,3 +8,5 @@
 !media/*
 !work/
 !work/**
+!contact/
+!contact/**

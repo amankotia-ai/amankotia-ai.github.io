@@ -1,0 +1,820 @@
+<!doctype html>
+<html lang="en" class="dt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Contact · Abhishek Mankotia</title>
+<meta name="description" content="Start a project with Abhishek Mankotia, an independent designer and engineer: brand and website rebuilds, launch films made in code, and pitch decks taken to a first version.">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400&family=Instrument+Serif&display=swap" rel="stylesheet">
+<style>
+  /* Navigating between this page and the homepage or a case study is a view transition, as there. */
+  @view-transition { navigation: auto; }
+  /* Contact page: the case study's shell (nav and dark finish) around a project brief
+     set as a sheet of tractor-feed paper, after Parallel's contact form: punched feed holes down
+     both edges, dotted perforations, printed labels with worn ink. The visitor ticks what they need
+     in pen, rings a budget and a timeline, and sends it; the sheet tears off the pad and leaves the
+     carbon copy underneath, which takes a rubber stamp. The page stays dark throughout. */
+  :root {
+    --margin: max(40px, env(safe-area-inset-left), env(safe-area-inset-right));
+    --nav-top: max(28px, env(safe-area-inset-top));   /* the nav sits a little higher than the side margins */
+    --gap: 25px;
+    --grotesk: "Neue Haas Grotesk Text Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --display: "Neue Haas Grotesk Display Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --serif: "PP Editorial New", "Instrument Serif", "Times New Roman", serif;
+    --mono: "GT America Mono", "DM Mono", ui-monospace, Menlo, monospace;
+    --bg: #fff; --fg: #000;
+    --fg-64: rgba(0, 0, 0, 0.64); --fg-40: rgba(0, 0, 0, 0.4); --line: rgba(0, 0, 0, 0.16);
+    /* The paper and its inks. */
+    --paper: #f4f1e8;
+    --copy-paper: #ebdfa0;      /* the carbon copy's canary stock */
+    --ink: #1c1b18;             /* printed */
+    --ink-2: #6e6a60;
+    --rule: rgba(28, 27, 24, 0.3);
+    --pen: #2546a8;             /* the visitor's ballpoint */
+    --carbon: #34367a;
+    --red: #c43a2c;             /* the serial number, errors and the stamp */
+  }
+  html.dt {
+    --bg: #000; --fg: #fff;
+    --fg-64: rgba(255, 255, 255, 0.64); --fg-40: rgba(255, 255, 255, 0.4); --line: rgba(255, 255, 255, 0.16);
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html { background: var(--bg); }
+  html, body { margin: 0; }
+  body { background: var(--bg); color: var(--fg); overflow-x: clip; font: 400 14px/1.5 var(--grotesk); }
+  html.lenis, html.lenis body { height: auto; }
+  .lenis.lenis-smooth { scroll-behavior: auto !important; }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; }
+  .wrap { padding: 0 var(--margin); }
+  .page { position: relative; z-index: 1; opacity: 0; transition: opacity .4s ease; }   /* above the finish */
+  .page.in { opacity: 1; }
+  .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+  /* lightweight.info's page-background finish, as on the case study's dark sections. */
+  .finish { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
+  .finish i {
+    position: absolute; border-radius: 50%; transform: translate(-50%, -50%);
+    left: calc(50% + var(--x) / 1080 * 100lvh); top: calc(50% + var(--y) / 1080 * 100lvh);
+    width: calc(var(--size) / 1080 * 100lvh); height: calc(var(--size) / 1080 * 100lvh);
+  }
+  .finish .light { --x: -900; --y: -350; --size: 1650; opacity: 0.15; background: radial-gradient(50% 50% at 50% 50%, #fff 0, rgba(255, 255, 255, 0) 100%); }
+  .finish .shade { --x: 1020; --y: 699; --size: 1880; opacity: 0.5; background: radial-gradient(50% 50% at 50% 50%, #000 0, rgba(0, 0, 0, 0) 100%); }
+  .finish canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.6; }
+  .cover { position: fixed; inset: 0; background: #000; z-index: 99; opacity: 0; pointer-events: none; transition: opacity .6s cubic-bezier(.45, 0, .55, 1); }
+  .cover.on { opacity: 1; pointer-events: auto; }
+  .fx { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+  /* Top bar, as on the case study page: it sits at the top and scrolls away. */
+  .top {
+    position: absolute; left: var(--margin); right: var(--margin); top: var(--nav-top); z-index: 20;
+    display: grid; grid-template-columns: 1fr 1fr auto 1fr 1fr; column-gap: var(--gap); align-items: start;
+    text-transform: uppercase; color: var(--fg);
+  }
+  .top-menu { display: contents; }
+  .name { position: relative; margin: 0 8px; font: 400 17px/0.86 var(--serif); text-align: center; white-space: nowrap; text-transform: uppercase; }
+  .name b { font-family: var(--display); font-weight: 700; letter-spacing: -0.01em; }
+  .item {
+    position: relative; display: flex; align-items: center; gap: 8px; padding: 0 0 10px;
+    font: 300 12px/1 var(--mono); color: inherit; text-transform: uppercase; background: none; border: 0; cursor: pointer;
+  }
+  .item::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: currentColor; }
+  .item .dot { display: block; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+  .top .item { opacity: 1; transition: opacity .5s ease; }
+  .top:hover .item { opacity: 0.4; }
+  .top .item:hover { opacity: 1; }
+  .item:focus-visible, .copy:focus-visible { outline: 1px solid currentColor; outline-offset: 4px; }
+
+  /* The page: the pitch on the left, sticky while the sheet scrolls by on the right. */
+  .hero { padding: 150px 0 128px; }
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 640px); column-gap: clamp(40px, 6vw, 120px); align-items: start; }
+  .side { position: sticky; top: var(--margin); display: flex; flex-direction: column; gap: 56px; }
+  .intro { display: flex; flex-direction: column; gap: 32px; }
+  .title { margin: 0; font: 400 3.2vw/1.02 var(--serif); text-transform: uppercase; filter: url(#bleed); }
+  .title b { font-family: var(--display); font-weight: 700; letter-spacing: -0.01em; }
+  .lede { margin: 0; max-width: 30em; color: var(--fg-64); }
+  .who { display: flex; align-items: center; gap: 18px; }
+  .who img { width: 54px; height: 54px; border-radius: 50%; object-fit: cover; }
+  .who div { font: 300 12px/1.5 var(--mono); text-transform: uppercase; }
+  .who div span { display: block; color: var(--fg-40); }
+
+  .aside { display: flex; flex-direction: column; gap: 48px; max-width: 520px; }
+  .facts { margin: 0; font: 300 12px/1.4 var(--mono); text-transform: uppercase; }
+  .fact { position: relative; display: grid; grid-template-columns: 9em 1fr auto; gap: 16px; align-items: center; padding: 14px 0; }
+  .fact::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--line); }
+  .fact dt { color: var(--fg-40); }
+  .fact dd { margin: 0; }
+  .copy { padding: 0; background: none; border: 0; color: var(--fg-64); font: inherit; text-transform: uppercase; cursor: pointer; transition: color .3s ease; }
+  .copy:hover { color: var(--fg); }
+  .steps h2 { margin: 0 0 18px; font: 300 12px/1 var(--mono); text-transform: uppercase; color: var(--fg-40); }
+  .steps ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 14px; }
+  .steps li { display: grid; grid-template-columns: 3em 1fr; color: var(--fg-64); }
+  .steps li span { font: 300 12px/1.75 var(--mono); color: var(--fg); }
+
+  /* The sheet. Feed holes are cut out of the paper with a mask (the page shows through them),
+     dotted perforations run inside them, and the stock carries a faint fibre grain. */
+  .stage { position: relative; display: grid; }
+  .stage > * { grid-area: 1 / 1; min-width: 0; }
+  .sheet { position: relative; z-index: 2; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35)) drop-shadow(0 24px 48px rgba(0, 0, 0, 0.5)); }
+  .paper {
+    --pitch: 24px; --hole: 4.5px; --hole-x: 16px; --perf-x: 32px; --px: 76px;
+    position: relative; isolation: isolate; color: var(--ink); background-color: var(--paper);
+    background-image:
+      linear-gradient(270deg, rgba(120, 112, 96, 0.08), rgba(120, 112, 96, 0) 96px),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.012 .02' numOctaves='3' seed='4' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .45  0 0 0 0 .42  0 0 0 0 .35  .22 0 0 0 -.08'/></filter><rect width='100%' height='100%' filter='url(%23f)'/></svg>"),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='9' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .3  0 0 0 0 .28  0 0 0 0 .24  .5 0 0 0 -.24'/></filter><rect width='100%' height='100%' filter='url(%23f)'/></svg>");
+    background-size: 100% 100%, 600px 600px, 180px 180px;
+    -webkit-mask:
+      radial-gradient(circle, #000 calc(var(--hole) - 0.5px), #0000 calc(var(--hole) + 0.5px)) calc(var(--hole-x) - var(--pitch) / 2) 0 / var(--pitch) var(--pitch) repeat-y,
+      radial-gradient(circle, #000 calc(var(--hole) - 0.5px), #0000 calc(var(--hole) + 0.5px)) right calc(var(--hole-x) - var(--pitch) / 2) top 0 / var(--pitch) var(--pitch) repeat-y,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      radial-gradient(circle, #000 calc(var(--hole) - 0.5px), #0000 calc(var(--hole) + 0.5px)) calc(var(--hole-x) - var(--pitch) / 2) 0 / var(--pitch) var(--pitch) repeat-y,
+      radial-gradient(circle, #000 calc(var(--hole) - 0.5px), #0000 calc(var(--hole) + 0.5px)) right calc(var(--hole-x) - var(--pitch) / 2) top 0 / var(--pitch) var(--pitch) repeat-y,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    padding: 40px var(--px) 44px;
+  }
+  .perf { position: absolute; inset: 0; pointer-events: none; }
+  .perf::before, .perf::after {
+    content: ""; position: absolute; top: 0; bottom: 0; width: 1px;
+    background: repeating-linear-gradient(rgba(110, 104, 92, 0.4) 0 2.5px, transparent 2.5px 5px);
+  }
+  .perf::before { left: var(--perf-x); }
+  .perf::after { right: var(--perf-x); }
+  /* A fanfold perforation across the full width of the sheet. */
+  .tear { height: 1px; margin: 34px calc(-1 * var(--px)); background: repeating-linear-gradient(90deg, rgba(110, 104, 92, 0.45) 0 4px, transparent 4px 8px); }
+
+  /* Print: the sheet's own type, set in the site's mono and worn a little (the #print filter). */
+  .print { filter: url(#print); }
+  .letterhead { display: flex; }
+  .lh-meta { display: grid; grid-template-columns: auto auto; gap: 4px 14px; font: 400 10.5px/1.3 var(--mono); text-transform: uppercase; color: var(--ink-2); }
+  .lh-meta dt, .lh-meta dd { margin: 0; }
+  .lh-meta dd { color: var(--ink); }
+  .serial { color: var(--red) !important; letter-spacing: 0.06em; }
+  .sheet-intro { margin: 44px 0 0; max-width: 34em; font: 400 13px/1.5 var(--mono); }
+
+  .q { margin: 0; padding: 0; border: 0; min-width: 0; }
+  .q + .q { margin-top: 40px; }
+  .q legend { display: flex; align-items: baseline; gap: 14px; width: 100%; padding: 0; margin-bottom: 18px; font: 400 11px/1.3 var(--mono); text-transform: uppercase; letter-spacing: 0.02em; }
+  .q legend .n { color: var(--ink-2); }
+  .q legend .hint { margin-left: auto; color: var(--ink-2); text-transform: none; letter-spacing: 0; }
+  .err { margin: 10px 0 0; font: 400 11px/1.3 var(--mono); color: var(--red); }
+
+  /* Tick boxes, ticked in pen. The native input lies over the row, transparent. */
+  .ticks { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; }
+  .tick { position: relative; display: flex; align-items: center; gap: 12px; font: 400 14px/1.3 var(--grotesk); cursor: pointer; }
+  .tick input, .opt input { position: absolute; inset: -4px; width: calc(100% + 8px); height: calc(100% + 8px); margin: 0; opacity: 0; cursor: pointer; }
+  .box { position: relative; flex: none; width: 15px; height: 15px; border: 1px solid var(--ink); }
+  .box svg { position: absolute; left: -2px; top: -9px; width: 24px; height: 24px; overflow: visible; }
+  .pen { fill: none; stroke: var(--pen); stroke-width: 2.1; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1 2; stroke-dashoffset: 1.02; transition: stroke-dashoffset .32s cubic-bezier(.5, 0, .3, 1); }
+  .tick input:checked ~ .box .pen, .opt input:checked ~ .ring .pen { stroke-dashoffset: 0; }
+  .tick input:focus-visible ~ .box, .opt input:focus-visible ~ .t { outline: 1px dashed var(--ink); outline-offset: 4px; }
+
+  /* Options ringed in pen, one per question. */
+  .opts { display: flex; flex-wrap: wrap; gap: 14px 30px; padding-left: 4px; }
+  .opt { position: relative; font: 400 14px/1.3 var(--grotesk); cursor: pointer; }
+  .opt .t { position: relative; z-index: 1; }
+  .ring { position: absolute; left: -12px; top: -8px; width: calc(100% + 24px); height: calc(100% + 16px); overflow: visible; pointer-events: none; }
+  .ring .pen { stroke-width: 1.5; transition-duration: .5s; }
+
+  /* Ruled fields: the label printed above, the answer written on the rule. */
+  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 26px 24px; }
+  .field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .field.wide { grid-column: 1 / -1; }
+  .field .lbl { font: 400 10.5px/1.3 var(--mono); text-transform: uppercase; color: var(--ink-2); letter-spacing: 0.02em; }
+  .field input, .field textarea {
+    width: 100%; padding: 4px 0 7px; border: 0; border-bottom: 1px solid var(--rule); border-radius: 0; background: transparent;
+    color: var(--ink); font: 400 15px/1.4 var(--grotesk); outline: 0; transition: border-color .25s ease;
+  }
+  .field textarea {
+    resize: vertical; min-height: 116px; padding-top: 6px;
+    border-bottom: 0; line-height: 29px;   /* written on ruled lines */
+    background: repeating-linear-gradient(transparent 0 28px, var(--rule) 28px 29px);
+    background-attachment: local;
+  }
+  .field input:hover { border-bottom-color: rgba(28, 27, 24, 0.55); }
+  .field input:focus { border-bottom-color: var(--ink); }
+  .field textarea:focus { background-image: repeating-linear-gradient(transparent 0 28px, rgba(28, 27, 24, 0.55) 28px 29px); }
+  .field input[aria-invalid="true"] { border-bottom-color: var(--red); }
+  .field input:-webkit-autofill { -webkit-box-shadow: 0 0 0 40px var(--paper) inset; -webkit-text-fill-color: var(--ink); }
+  .field ::placeholder { color: rgba(28, 27, 24, 0.32); }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+  .send { display: flex; flex-direction: column; gap: 16px; }
+  .submit {
+    position: relative; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 54px; padding: 0 20px;
+    border: 0; background: var(--ink); color: var(--paper); cursor: pointer;
+    font: 400 12px/1 var(--mono); text-transform: uppercase; letter-spacing: 0.04em;
+    filter: url(#print); transition: background-color .25s ease, transform .25s ease;
+  }
+  .submit:hover { background: #33312c; }
+  .submit:active { transform: translateY(1px); }
+  .submit:focus-visible { outline: 1px dashed var(--ink); outline-offset: 4px; }
+  .submit svg { width: 10px; height: 10px; }
+  .submit[aria-busy="true"] { cursor: progress; }
+  .status { margin: 0; font: 400 12px/1.5 var(--mono); color: var(--red); }
+  .status a, .fine a { text-decoration: underline; text-underline-offset: 3px; }
+  .fine { margin: 0; font: 400 11px/1.5 var(--mono); color: var(--ink-2); text-align: center; }
+
+  /* Sending tears the sheet off the pad: a tug down, then up and away. */
+  @keyframes tear {
+    0% { transform: none; animation-timing-function: cubic-bezier(.3, 0, .5, 1); }
+    12% { transform: translateY(6px) rotate(0.35deg); animation-timing-function: cubic-bezier(.55, 0, .85, .3); }
+    85% { opacity: 1; }
+    100% { transform: translate(4%, -112%) rotate(-6deg); opacity: 0; }
+  }
+  .sheet.torn { animation: tear 1.05s forwards; pointer-events: none; }
+  .sheet.gone { position: absolute; left: 0; right: 0; top: 0; visibility: hidden; }
+  @keyframes feed { from { transform: translateY(28px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .sheet.fed { animation: feed .7s cubic-bezier(.22, 1, .36, 1); }
+
+  /* The carbon copy, under the sheet: canary stock, everything in blurred carbon ink. */
+  .receipt { --px: 76px; position: relative; z-index: 1; align-self: start; background-color: var(--copy-paper); color: var(--carbon); cursor: crosshair; }
+  .receipt a, .receipt button { cursor: pointer; }
+  .carbon { filter: url(#carbon); }
+  .receipt .lh-meta, .receipt .lh-meta dd { color: var(--carbon); }
+  .r-head { margin: 52px 0 0; font: 400 clamp(30px, 2.6vw, 40px)/0.98 var(--serif); text-transform: uppercase; outline: 0; }
+  .r-head b { font-family: var(--display); font-weight: 700; letter-spacing: -0.01em; }
+  .r-list { margin: 36px 0 0; font: 400 12px/1.4 var(--mono); }
+  .r-list div { display: grid; grid-template-columns: 9.5em 1fr; gap: 16px; padding: 9px 0; border-bottom: 1px dashed rgba(52, 54, 122, 0.35); }
+  .r-list dt { text-transform: uppercase; opacity: 0.7; }
+  .r-list dd { margin: 0; font: 400 14px/1.4 var(--grotesk); overflow-wrap: anywhere; }
+  .r-note { margin: 28px 0 0; max-width: 34em; font: 400 13px/1.5 var(--mono); }
+  .r-act { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 40px; }
+  .r-btn {
+    display: flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 14px;
+    border: 1px solid currentColor; background: none; color: inherit; font: 400 12px/1 var(--mono); text-transform: uppercase; letter-spacing: 0.04em;
+    transition: background-color .25s ease, color .25s ease;
+  }
+  .r-btn.solid { background: var(--carbon); color: var(--copy-paper); }
+  .r-btn:hover { background: rgba(52, 54, 122, 0.08); }
+  .r-btn.solid:hover { background: #2a2c66; }
+  .r-btn:focus-visible { outline: 1px dashed currentColor; outline-offset: 4px; }
+
+  /* Rubber stamps, pressed onto the copy: the first on its own, more wherever it is clicked. */
+  .stamps { position: absolute; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
+  .stamp { position: absolute; width: var(--w, 220px); transform: translate(-50%, -50%) rotate(var(--a, -8deg)); mix-blend-mode: multiply; }
+  .stamp svg { display: block; width: 100%; height: auto; overflow: visible; animation: press .22s cubic-bezier(.16, 1, .3, 1) both; }
+  .stamp text { fill: var(--red); }
+  .stamp rect { fill: none; stroke: var(--red); }
+  .stamp .big { font: 700 41px/1 var(--display); letter-spacing: 0.02em; }
+  .stamp .small { font: 400 11px/1 var(--mono); letter-spacing: 0.12em; }
+  @keyframes press {
+    0% { transform: scale(1.12); opacity: 0; }
+    45% { transform: scale(0.985); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  @keyframes thud { 0%, 100% { transform: none; } 35% { transform: translateY(1.5px) scale(0.997); } }
+  .receipt.thud { animation: thud .2s ease-out; }
+
+  @media (max-width: 1100px) {
+    .paper, .receipt { --px: 60px; }
+    .ticks { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 991px) {
+    .grid { grid-template-columns: 1fr; row-gap: 56px; }
+    .side { display: contents; }
+    .intro { order: 1; max-width: 640px; }
+    .stage { order: 2; max-width: 640px; }
+    .aside { order: 3; }
+    .title { font-size: 5.4vw; }
+  }
+  @media (max-width: 767px) {
+    :root { --margin: max(12px, env(safe-area-inset-left), env(safe-area-inset-right)); --nav-top: max(12px, env(safe-area-inset-top)); }
+    .top { grid-template-columns: 1fr; }
+    .top-menu { display: none; }
+    .name { font-size: 14px; }
+    .hero { padding: 96px 0 64px; }
+    .intro { align-items: center; text-align: center; gap: 24px; }
+    .title { width: 90vw; font-size: 9vw; text-wrap: balance; }
+    .paper { --pitch: 19px; --hole: 3.5px; --hole-x: 11px; --perf-x: 22px; --px: 38px; padding-top: 30px; }
+    .receipt { --px: 38px; }
+    .sheet-intro { margin-top: 30px; }
+    .fields { grid-template-columns: 1fr; }
+    .opts { gap: 16px 26px; }
+    .r-act { grid-template-columns: 1fr; }
+    .fact { grid-template-columns: 7em 1fr auto; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pen { transition: none; }
+    .sheet.torn, .sheet.fed, .stamp svg, .receipt.thud { animation: none; }
+  }
+</style>
+</head>
+<body>
+<div class="finish" aria-hidden="true"><i class="light"></i><i class="shade"></i><canvas></canvas></div>
+<svg class="fx" aria-hidden="true" focusable="false">
+  <!-- Grain bleed on the title, as on the case study page. -->
+  <filter id="bleed" x="-5%" y="-40%" width="110%" height="180%" color-interpolation-filters="sRGB">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="spread"/>
+    <feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="2" seed="7" stitchTiles="stitch" result="noise"/>
+    <feComponentTransfer in="noise" result="grain">
+      <feFuncR type="linear" slope="1.6" intercept="-0.3"/>
+      <feFuncA type="linear" slope="0" intercept="1"/>
+    </feComponentTransfer>
+    <feColorMatrix in="grain" type="matrix" result="texture"
+      values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  1 0 0 0 0"/>
+    <feComposite in="spread" in2="texture" operator="arithmetic" k1="0.85" k2="0.12" k3="0" k4="0" result="grained"/>
+    <feColorMatrix in="grained" type="matrix" result="bled"
+      values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.6 0"/>
+    <feMerge><feMergeNode in="bled"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <!-- Worn print: the type's ink thinned in fine, stepped speckles, as off an old line printer. -->
+  <filter id="print" x="-2%" y="-10%" width="104%" height="120%">
+    <feTurbulence type="fractalNoise" baseFrequency="2.4" numOctaves="2" seed="3" result="noise"/>
+    <feComponentTransfer in="noise" result="wear">
+      <feFuncA type="discrete" tableValues=".42 .62 .8 .92 1 1"/>
+    </feComponentTransfer>
+    <feComposite in="SourceGraphic" in2="wear" operator="in"/>
+  </filter>
+  <!-- Carbon: softer than print, a touch spread, and patchier. -->
+  <filter id="carbon" x="-2%" y="-10%" width="104%" height="120%">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="0.35" result="soft"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="12" result="noise"/>
+    <feComponentTransfer in="noise" result="wear">
+      <feFuncA type="discrete" tableValues=".5 .7 .85 .95 1"/>
+    </feComponentTransfer>
+    <feComposite in="soft" in2="wear" operator="in"/>
+  </filter>
+  <!-- Rubber: the stamp's edges wobble a little and its ink lifts in patches. -->
+  <filter id="rubber" x="-5%" y="-5%" width="110%" height="110%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="2" seed="5" result="warp"/>
+    <feDisplacementMap in="SourceGraphic" in2="warp" scale="2.2" xChannelSelector="R" yChannelSelector="G" result="wobbled"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.16 0.5" numOctaves="3" seed="21" result="noise"/>
+    <feComponentTransfer in="noise" result="lift">
+      <feFuncA type="discrete" tableValues="0 .35 .75 .9 1 1 1"/>
+    </feComponentTransfer>
+    <feComposite in="wobbled" in2="lift" operator="in"/>
+  </filter>
+</svg>
+<div class="cover" id="cover"></div>
+<div class="page" id="page">
+<header class="top" id="nav">
+  <nav class="top-menu" aria-label="Primary">
+    <a class="item" href="../#work">Work</a>
+    <a class="item" href="../#archive">Archive</a>
+  </nav>
+  <a class="name" href="../">( <b>Abhishek Mankotia</b> )</a>
+  <nav class="top-menu" aria-label="Secondary">
+    <a class="item" href="../#about">About</a>
+    <a class="item" href="./" aria-current="page"><span class="dot" aria-hidden="true"></span>Contact</a>
+  </nav>
+</header>
+
+<main>
+<section class="hero">
+  <div class="wrap grid">
+    <div class="side">
+      <div class="intro" data-load>
+        <h1 class="title">Tell me about <b>your project</b></h1>
+        <p class="lede">I take a product from the idea that explains it to the brand, the website and the films that carry it, and I build what I design. Most projects start with this sheet.</p>
+        <div class="who"><img src="media/avatar.jpg" alt=""><div>Abhishek Mankotia<span>Product designer and engineer</span></div></div>
+      </div>
+      <div class="aside" data-load>
+        <dl class="facts">
+          <div class="fact"><dt>Email</dt><dd><a href="mailto:hello@amankotia.com" data-email>hello@amankotia.com</a></dd><dd><button class="copy" type="button" data-copy>Copy</button></dd></div>
+          <div class="fact"><dt>Studio</dt><dd>Bengaluru, India</dd><dd></dd></div>
+          <div class="fact"><dt>My time</dt><dd id="tz-me">Bengaluru</dd><dd></dd></div>
+          <div class="fact"><dt>Your time</dt><dd id="tz-you">Here</dd><dd></dd></div>
+        </dl>
+        <div class="steps">
+          <h2>What happens next</h2>
+          <ol>
+            <li><span>01</span>I read your brief and look at your product.</li>
+            <li><span>02</span>If I can help, we talk it through on a short call.</li>
+            <li><span>03</span>You get a scope, a timeline and a price before any work starts.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage" data-load>
+      <!-- The carbon copy, under the sheet until the brief is sent. -->
+      <div class="paper receipt" id="receipt" aria-hidden="true" inert>
+        <div class="perf"></div>
+        <header class="letterhead carbon">
+          <dl class="lh-meta">
+            <dt>Sender's copy</dt><dd data-r="serial"></dd>
+            <dt>Date</dt><dd data-r="date"></dd>
+          </dl>
+        </header>
+        <h2 class="r-head carbon" tabindex="-1" data-r="head"></h2>
+        <dl class="r-list carbon">
+          <div><dt>Needs</dt><dd data-r="needs"></dd></div>
+          <div><dt>Budget</dt><dd data-r="budget"></dd></div>
+          <div><dt>Timeline</dt><dd data-r="timeline"></dd></div>
+          <div><dt>Company</dt><dd data-r="company"></dd></div>
+          <div><dt>Reply to</dt><dd data-r="email"></dd></div>
+        </dl>
+        <p class="r-note carbon" data-r="note"></p>
+        <div class="r-act">
+          <a class="r-btn solid" href="../#work">See the work</a>
+          <button class="r-btn" type="button" id="again">Write another brief</button>
+        </div>
+        <div class="stamps" aria-hidden="true"></div>
+      </div>
+
+      <div class="sheet" id="sheet">
+        <form class="paper" id="brief" novalidate>
+          <div class="perf"></div>
+          <header class="letterhead print">
+            <dl class="lh-meta">
+              <dt>Project brief</dt><dd class="serial" data-serial></dd>
+              <dt>Date</dt><dd data-date></dd>
+            </dl>
+          </header>
+          <p class="sheet-intro print">Tick what fits, ring a budget and a timeline, and add a line or two. I read every brief myself.</p>
+          <div class="tear" aria-hidden="true"></div>
+
+          <fieldset class="q" id="q-need" aria-describedby="err-need">
+            <legend class="print"><span class="n">01</span>What do you need?<span class="hint">Tick all that apply</span></legend>
+            <div class="ticks">
+              <label class="tick"><input type="checkbox" name="need" value="Brand and website rebuild"><span class="box"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="pen" pathLength="1" d="M4 13.5C6.4 14.8 8 16.8 9.4 19.6C11.8 12.8 15.6 7.2 21.6 2.4"/></svg></span><span>Brand and website rebuild</span></label>
+              <label class="tick"><input type="checkbox" name="need" value="Launch or explainer film"><span class="box"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="pen" pathLength="1" d="M4 13.5C6.4 14.8 8 16.8 9.4 19.6C11.8 12.8 15.6 7.2 21.6 2.4"/></svg></span><span>Launch or explainer film</span></label>
+              <label class="tick"><input type="checkbox" name="need" value="Pitch deck to a first version"><span class="box"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="pen" pathLength="1" d="M4 13.5C6.4 14.8 8 16.8 9.4 19.6C11.8 12.8 15.6 7.2 21.6 2.4"/></svg></span><span>Pitch deck to a first version</span></label>
+              <label class="tick"><input type="checkbox" name="need" value="Product demo or walkthrough"><span class="box"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="pen" pathLength="1" d="M4 13.5C6.4 14.8 8 16.8 9.4 19.6C11.8 12.8 15.6 7.2 21.6 2.4"/></svg></span><span>Product demo or walkthrough</span></label>
+              <label class="tick"><input type="checkbox" name="need" value="Something else"><span class="box"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="pen" pathLength="1" d="M4 13.5C6.4 14.8 8 16.8 9.4 19.6C11.8 12.8 15.6 7.2 21.6 2.4"/></svg></span><span>Something else</span></label>
+            </div>
+            <p class="err" id="err-need" hidden></p>
+          </fieldset>
+
+          <fieldset class="q">
+            <legend class="print"><span class="n">02</span>Budget, in US dollars<span class="hint">Ring one</span></legend>
+            <div class="opts" data-ring>
+              <label class="opt"><input type="radio" name="budget" value="Under $10k"><span class="t">Under $10k</span></label>
+              <label class="opt"><input type="radio" name="budget" value="$10k to $25k"><span class="t">$10k to $25k</span></label>
+              <label class="opt"><input type="radio" name="budget" value="$25k to $50k"><span class="t">$25k to $50k</span></label>
+              <label class="opt"><input type="radio" name="budget" value="$50k and up"><span class="t">$50k and up</span></label>
+              <label class="opt"><input type="radio" name="budget" value="Not sure yet"><span class="t">Not sure yet</span></label>
+            </div>
+          </fieldset>
+
+          <fieldset class="q">
+            <legend class="print"><span class="n">03</span>When should it be live?<span class="hint">Ring one</span></legend>
+            <div class="opts" data-ring>
+              <label class="opt"><input type="radio" name="timeline" value="This month"><span class="t">This month</span></label>
+              <label class="opt"><input type="radio" name="timeline" value="In one to three months"><span class="t">In one to three months</span></label>
+              <label class="opt"><input type="radio" name="timeline" value="Later this year"><span class="t">Later this year</span></label>
+              <label class="opt"><input type="radio" name="timeline" value="Just exploring"><span class="t">Just exploring</span></label>
+            </div>
+          </fieldset>
+
+          <fieldset class="q">
+            <legend class="print"><span class="n">04</span>About you</legend>
+            <div class="fields">
+              <label class="field"><span class="lbl print">Full name</span><input name="name" autocomplete="name" required aria-describedby="err-name"><span class="err" id="err-name" hidden></span></label>
+              <label class="field"><span class="lbl print">Email</span><input name="email" type="email" autocomplete="email" required aria-describedby="err-email"><span class="err" id="err-email" hidden></span></label>
+              <label class="field wide"><span class="lbl print">Company website</span><input name="company" type="text" inputmode="url" autocomplete="url" placeholder="yourcompany.com"></label>
+              <label class="field wide"><span class="lbl print">Tell me about it (optional)</span><textarea name="message" rows="4"></textarea></label>
+            </div>
+          </fieldset>
+          <input class="hp" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+          <div class="tear" aria-hidden="true"></div>
+          <div class="send">
+            <button class="submit" type="submit"><span data-label>Send the brief</span><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M1 9L9 1M3 1h6v6"/></svg></button>
+            <p class="status" role="status" aria-live="polite" hidden></p>
+            <p class="fine print">Or write to <a href="mailto:hello@amankotia.com" data-email>hello@amankotia.com</a>. I only use your details to reply.</p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+</div>
+
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script>
+(() => {
+  // Where briefs go. With a Web3Forms access key (free, from web3forms.com, made for this
+  // address) the sheet posts to it and Web3Forms emails the brief on; without one, sending opens
+  // the visitor's mail app with the brief written out instead.
+  const EMAIL = 'hello@amankotia.com';
+  const WEB3FORMS_KEY = '';
+
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  document.querySelectorAll('[data-email]').forEach(a => { a.href = `mailto:${EMAIL}`; a.textContent = EMAIL; });
+
+  // Page transition: a black cover fades over on the way out and off on the way in.
+  const cover = document.getElementById('cover'), page = document.getElementById('page');
+  const arriving = sessionStorage.getItem('transition') === '1';
+  sessionStorage.removeItem('transition');
+  if (arriving && !still) {
+    cover.classList.add('on');
+    requestAnimationFrame(() => requestAnimationFrame(() => { cover.classList.remove('on'); page.classList.add('in'); }));
+  } else {
+    page.classList.add('in');
+  }
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href]');
+    if (!a || a.target === '_blank' || still) return;
+    const href = a.getAttribute('href');
+    if (!href || href.startsWith('#') || a.origin !== location.origin) return;
+    if (a.pathname === location.pathname) return;
+    e.preventDefault();
+    sessionStorage.setItem('transition', '1');
+    cover.classList.add('on');
+    setTimeout(() => { location.href = a.href; }, 600);
+  });
+  addEventListener('pageshow', e => { if (e.persisted) { cover.classList.remove('on'); page.classList.add('in'); } });
+
+  // The name is sized as on the homepage: its capitals run from the menu labels' cap line down to
+  // the menu rule, and it shifts so they line up. Phones hide the menu and keep the CSS size.
+  const top = document.querySelector('.top'), nameEl = top.querySelector('.name'), nameB = nameEl.querySelector('b');
+  const measure = document.createElement('canvas').getContext('2d');
+  function capMetrics(el, size) {
+    const cs = getComputedStyle(el);
+    measure.font = `${cs.fontWeight} ${size}px ${cs.fontFamily}`;
+    const m = measure.measureText('H');
+    return { ascent: m.fontBoundingBoxAscent, cap: m.actualBoundingBoxAscent };
+  }
+  function capTop(textNode, el) {
+    const range = document.createRange();
+    range.selectNodeContents(textNode);
+    const { ascent, cap } = capMetrics(el, parseFloat(getComputedStyle(el).fontSize));
+    return range.getBoundingClientRect().top + ascent - cap;
+  }
+  function fitName() {
+    const label = top.querySelector('.item');
+    nameEl.style.fontSize = ''; nameEl.style.top = '0px';   // measured unshifted
+    if (!label.offsetParent) return;
+    const labelText = [...label.childNodes].find(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim());
+    const rule = label.getBoundingClientRect().bottom - 1;      // top of the 1px rule
+    const capStart = capTop(labelText, label);
+    nameEl.style.fontSize = (rule - capStart) / (capMetrics(nameB, 100).cap / 100) + 'px';
+    nameEl.style.top = capStart - capTop(nameB.firstChild, nameB) + 'px';
+  }
+  addEventListener('resize', fitName);
+  document.fonts.ready.then(fitName);
+
+  // The title's grain bleed spreads BLEED_SPREAD of its font size, as on the homepage.
+  const BLEED_SPREAD = 0.04;
+  const heroTitle = document.querySelector('.title'), bleedSpread = document.querySelector('#bleed feGaussianBlur');
+  const sizeBleed = () => bleedSpread.setAttribute('stdDeviation', (parseFloat(getComputedStyle(heroTitle).fontSize) * BLEED_SPREAD).toFixed(2));
+  addEventListener('resize', sizeBleed);
+  sizeBleed();
+
+  // The blocks rise in on load, one after another.
+  document.querySelectorAll('[data-load]').forEach((el, i) => {
+    el.style.transition = 'none';
+    el.style.opacity = '0'; el.style.transform = 'translateY(0.75em)';
+    setTimeout(() => {
+      el.style.transition = still ? 'none' : 'opacity .9s cubic-bezier(.22, 1, .36, 1), transform .9s cubic-bezier(.22, 1, .36, 1)';
+      el.style.opacity = ''; el.style.transform = '';
+      // A transform left on the stage would make it the containing block of the sheet's tear.
+      setTimeout(() => { el.style.transition = ''; }, 1000);
+    }, 200 + i * 180);
+  });
+
+  // Time zones, yours and mine, every second.
+  const you = document.getElementById('tz-you'), me = document.getElementById('tz-me');
+  const yourZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const fmt = tz => new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: tz });
+  const yourCode = (yourZone.split('/')[1] || yourZone).replace(/_/g, ' ');
+  const clock = () => { const d = new Date(); you.textContent = `${fmt(yourZone).format(d)} (${yourCode})`; me.textContent = `${fmt('Asia/Kolkata').format(d)} (Bengaluru)`; };
+  clock(); setInterval(clock, 1000);
+
+  // Copy the address.
+  document.querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(EMAIL); b.textContent = 'Copied'; }
+    catch (e) { b.textContent = 'Select it'; }
+    setTimeout(() => { b.textContent = 'Copy'; }, 1600);
+  }));
+
+  // The brief. Each sheet is numbered and dated as it is printed.
+  const form = document.getElementById('brief'), sheet = document.getElementById('sheet');
+  const receipt = document.getElementById('receipt'), stamps = receipt.querySelector('.stamps');
+  const submit = form.querySelector('.submit'), submitLabel = submit.querySelector('[data-label]');
+  const status = form.querySelector('.status');
+  const dateText = d => new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).format(d).toUpperCase();
+  let serial = '';
+  function printSheet() {
+    serial = String(1000 + Math.floor(Math.random() * 9000));
+    form.querySelector('[data-serial]').textContent = `No. ${serial}`;
+    form.querySelector('[data-date]').textContent = dateText(new Date());
+  }
+  printSheet();
+
+  // Each ringed option gets its own loop of pen, a slightly different shape every time.
+  form.querySelectorAll('[data-ring] .opt').forEach(opt => {
+    const j = () => (Math.random() - 0.5) * 6;
+    const d = `M${16 + j()} ${7 + j() / 2}C${36 + j()} 1 ${82 + j()} 2 ${94 + j()} ${12 + j() / 2}C${104 + j()} ${21 + j() / 2} ${90 + j()} 34 ${57 + j()} 36C${25 + j()} 38 3 ${32 + j() / 2} 4 ${21 + j() / 2}C5 ${11 + j() / 2} ${24 + j()} 4 ${46 + j()} 4`;
+    opt.insertAdjacentHTML('beforeend', `<svg class="ring" viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true"><path class="pen" pathLength="1" d="${d}"/></svg>`);
+  });
+
+  const field = name => form.elements[name];
+  const value = name => (field(name).value || '').trim();
+  const needs = () => [...form.querySelectorAll('[name="need"]:checked')].map(i => i.value);
+  const picked = name => form.querySelector(`[name="${name}"]:checked`)?.value || '';
+
+  function showError(id, text, input) {
+    const el = document.getElementById(id);
+    el.textContent = text; el.hidden = !text;
+    if (input) input.setAttribute('aria-invalid', text ? 'true' : 'false');
+  }
+  function validate() {
+    const problems = [];
+    const name = field('name'), email = field('email');
+    showError('err-name', value('name') ? '' : 'Add your name', name);
+    if (!value('name')) problems.push(name);
+    const emailOk = value('email') && email.checkValidity();
+    showError('err-email', emailOk ? '' : (value('email') ? 'That email looks incomplete' : 'Add an email I can reply to'), email);
+    if (!emailOk) problems.push(email);
+    showError('err-need', needs().length ? '' : 'Tick at least one', null);
+    if (!needs().length) problems.unshift(form.querySelector('[name="need"]'));
+    return problems;
+  }
+  // Errors clear as soon as they are answered.
+  form.addEventListener('input', e => {
+    if (e.target.name === 'name' && value('name')) showError('err-name', '', field('name'));
+    if (e.target.name === 'email' && field('email').checkValidity() && value('email')) showError('err-email', '', field('email'));
+    if (e.target.name === 'need' && needs().length) showError('err-need', '', null);
+  });
+
+  function brief() {
+    return {
+      serial, name: value('name'), email: value('email'), company: value('company'), message: value('message'),
+      needs: needs(), budget: picked('budget'), timeline: picked('timeline'),
+    };
+  }
+  const subjectOf = b => `Brief No. ${b.serial} from ${b.name}${b.company ? `, ${b.company}` : ''}`;
+  function bodyOf(b) {
+    return [
+      `Needs: ${b.needs.join(', ')}`,
+      `Budget: ${b.budget || 'Not given'}`,
+      `Timeline: ${b.timeline || 'Not given'}`,
+      `Company: ${b.company || 'Not given'}`,
+      '',
+      b.message || '',
+      '',
+      `${b.name}, ${b.email}`,
+    ].join('\n');
+  }
+  const mailtoOf = b => `mailto:${EMAIL}?subject=${encodeURIComponent(subjectOf(b))}&body=${encodeURIComponent(bodyOf(b))}`;
+
+  async function deliver(b) {
+    if (!WEB3FORMS_KEY) { location.href = mailtoOf(b); return 'drafted'; }
+    const res = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        access_key: WEB3FORMS_KEY,
+        subject: subjectOf(b),
+        from_name: 'amankotia.com',
+        name: b.name, email: b.email,
+        'Needs': b.needs.join(', '),
+        'Budget (USD)': b.budget || 'Not given',
+        'Timeline': b.timeline || 'Not given',
+        'Company website': b.company || 'Not given',
+        message: b.message || '(No message)',
+        'Brief number': b.serial,
+        botcheck: field('botcheck').checked,
+      }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.success) throw new Error(data.message || `HTTP ${res.status}`);
+    return 'sent';
+  }
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    if (submit.getAttribute('aria-busy') === 'true') return;
+    status.hidden = true;
+    const problems = validate();
+    if (problems.length) { problems[0].focus(); return; }
+    const b = brief();
+    submit.setAttribute('aria-busy', 'true'); submitLabel.textContent = 'Sending';
+    let outcome;
+    try { outcome = await deliver(b); }
+    catch (err) {
+      submit.removeAttribute('aria-busy'); submitLabel.textContent = 'Send the brief';
+      status.innerHTML = `I couldn't confirm it arrived. Your answers are still here, so try again, or <a href="${mailtoOf(b)}">send it by email</a>.`;
+      status.hidden = false;
+      return;
+    }
+    fillReceipt(b, outcome);
+    await tearOff();
+    submit.removeAttribute('aria-busy'); submitLabel.textContent = 'Send the brief';
+  });
+
+  function fillReceipt(b, outcome) {
+    const set = (k, v) => { receipt.querySelector(`[data-r="${k}"]`).textContent = v; };
+    const first = b.name.split(/\s+/)[0];
+    const head = receipt.querySelector('[data-r="head"]');
+    head.innerHTML = outcome === 'sent' ? 'Thanks, <b></b>.<br>Your brief is in.' : 'Almost there, <b></b>.<br>Your brief is written.';
+    head.querySelector('b').textContent = first;
+    set('serial', `No. ${b.serial}`);
+    set('date', dateText(new Date()));
+    set('needs', b.needs.join(', '));
+    set('budget', b.budget || 'Not given');
+    set('timeline', b.timeline || 'Not given');
+    set('company', b.company || 'Not given');
+    set('email', b.email);
+    set('note', outcome === 'sent'
+      ? `I'll write back to ${b.email} from ${EMAIL}. This copy is yours to keep.`
+      : `It's waiting in your mail app. Send it from there and it reaches me at ${EMAIL}.`);
+    receipt.dataset.outcome = outcome;
+  }
+
+  // Sending: bring the top of the sheet into view, tear it off, and stamp the copy underneath.
+  async function tearOff() {
+    const stage = sheet.parentElement;
+    const y = stage.getBoundingClientRect().top - 32;
+    if (Math.abs(y) > 24) {
+      if (lenis) await new Promise(r => lenis.scrollTo(stage, { offset: -32, duration: 0.9, onComplete: r }));
+      else { scrollBy({ top: y, behavior: still ? 'auto' : 'smooth' }); await wait(still ? 0 : 650); }
+    }
+    receipt.removeAttribute('aria-hidden'); receipt.inert = false;
+    sheet.inert = true;
+    if (!still) { sheet.classList.add('torn'); await wait(1050); }
+    sheet.classList.remove('torn'); sheet.classList.add('gone');
+    receipt.querySelector('[data-r="head"]').focus({ preventScroll: true });
+    await wait(still ? 0 : 180);
+    const r = receipt.getBoundingClientRect();
+    stampAt(r.width * 0.7, Math.min(r.height * 0.3, 230), -9);
+  }
+
+  // A rubber stamp: the word, the date and the brief's number in a double rule.
+  function stampAt(x, y, angle) {
+    const word = receipt.dataset.outcome === 'sent' ? 'RECEIVED' : 'DRAFTED';
+    const el = document.createElement('div');
+    el.className = 'stamp';
+    el.style.left = `${x}px`; el.style.top = `${y}px`;
+    el.style.setProperty('--a', `${angle}deg`);
+    el.innerHTML = `<svg viewBox="0 0 240 128" aria-hidden="true"><g filter="url(#rubber)">
+      <rect x="4" y="4" width="232" height="120" rx="10" stroke-width="5"/>
+      <rect x="13" y="13" width="214" height="102" rx="5" stroke-width="1.5"/>
+      <text class="small" x="120" y="36" text-anchor="middle">ABHISHEK MANKOTIA</text>
+      <text class="big" x="120" y="78" text-anchor="middle" textLength="186" lengthAdjust="spacingAndGlyphs">${word}</text>
+      <text class="small" x="120" y="102" text-anchor="middle">${dateText(new Date())} · NO. ${serial}</text>
+    </g></svg>`;
+    stamps.appendChild(el);
+    if (stamps.children.length > 8) stamps.firstElementChild.remove();
+    if (!still) { receipt.classList.remove('thud'); void receipt.offsetWidth; receipt.classList.add('thud'); }
+  }
+  // More stamps wherever the copy is clicked (not on its buttons).
+  receipt.addEventListener('click', e => {
+    if (e.target.closest('a, button') || receipt.getAttribute('aria-hidden') === 'true') return;
+    const r = receipt.getBoundingClientRect();
+    stampAt(e.clientX - r.left, e.clientY - r.top, -16 + Math.random() * 24);
+  });
+
+  // Another brief: a fresh sheet feeds up over the copy.
+  document.getElementById('again').addEventListener('click', () => {
+    form.reset();
+    ['err-name', 'err-email', 'err-need'].forEach(id => showError(id, '', null));
+    form.querySelectorAll('[aria-invalid]').forEach(i => i.removeAttribute('aria-invalid'));
+    printSheet();
+    sheet.classList.remove('gone'); sheet.inert = false;
+    receipt.setAttribute('aria-hidden', 'true'); receipt.inert = true;
+    if (!still) { sheet.classList.add('fed'); setTimeout(() => sheet.classList.remove('fed'), 700); }
+    setTimeout(() => { stamps.replaceChildren(); }, still ? 0 : 400);
+    form.querySelector('[name="need"]').focus({ preventScroll: true });
+  });
+
+  // The finish's grain, as on the case study page: a 128 px tile of random grey at 12/255 (10 on
+  // phones), re-rolled every 8 frames and repeated over a window-sized canvas in CSS pixels. It
+  // holds still for reduced motion.
+  const grain = document.querySelector('.finish canvas'), grainCtx = grain.getContext('2d');
+  const tile = document.createElement('canvas');
+  tile.width = tile.height = 128;
+  const tileCtx = tile.getContext('2d'), noise = tileCtx.createImageData(128, 128);
+  let grainAge = 0, grainDrawn = false;
+  function sizeGrain() { grain.width = innerWidth; grain.height = innerHeight; grainDrawn = false; }
+  function tickGrain() {
+    if (grainDrawn && (still || ++grainAge % 8)) return;
+    const alpha = innerWidth <= 767 ? 10 : 12;
+    for (let i = 0; i < noise.data.length; i += 4) {
+      noise.data[i] = noise.data[i + 1] = noise.data[i + 2] = 255 * Math.random();
+      noise.data[i + 3] = alpha;
+    }
+    tileCtx.putImageData(noise, 0, 0);
+    grainCtx.clearRect(0, 0, grain.width, grain.height);
+    grainCtx.fillStyle = grainCtx.createPattern(tile, 'repeat');
+    grainCtx.fillRect(0, 0, grain.width, grain.height);
+    grainDrawn = true;
+  }
+  sizeGrain();
+  addEventListener('resize', sizeGrain);
+
+  const lenis = window.Lenis && !still ? new Lenis({ lerp: 0.08, wheelMultiplier: 0.9, smoothWheel: true }) : null;
+  function frame(now) {
+    if (lenis) lenis.raf(now);
+    tickGrain();
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
