@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Bianhua · Website and pitch deck · Abhishek Mankotia</title>
-<meta name="description" content="A website and a pitch deck for Jyoti Pathania Salwan, an image and etiquette coach, built around her portrait and her own words.">
+<title>Design Intervention · Website · Abhishek Mankotia</title>
+<meta name="description" content="A website for Design Intervention, a Mumbai studio that designs and builds XR studios, exhibition pavilions, film sets and interiors: one page for each line of work, opening on the real thing.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300&family=Instrument+Serif&display=swap" rel="stylesheet">
@@ -179,7 +179,7 @@
   .acc-a p + p { margin-top: -6px; }
 
   /* Next projects, after the homepage's cards. */
-  .next { padding: 128px 0; overflow-x: clip; }   /* the cards' corner marks wait 22px outside them; on phones they widened the page */
+  .next { padding: 128px 0; }
   .next-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 40px; margin-bottom: 54px; }
   .h-big { margin: 0; font: 400 3vw/0.9 var(--serif); text-transform: uppercase; }
   .h-big b { font-family: var(--display); font-weight: 700; letter-spacing: -0.01em; }
@@ -200,6 +200,9 @@
   .mark.bl { left: var(--o); bottom: var(--o); border-width: 0 0 1px 1px; --mx: -1; --my: 1; }
   .mark.br { right: var(--o); bottom: var(--o); border-width: 0 1px 1px 0; --mx: 1; --my: 1; }
   .card-media:hover .mark { transform: none; opacity: 1; }
+  /* The marks wait outside the card for a hover, so on touch screens, which never hover, they would
+     only widen the page past a phone's edge. */
+  @media (hover: none) { .mark { display: none; } }
   @media (hover: hover) and (pointer: fine) {
     .card-media { cursor: none; }
     .card-media:hover .cursor-tag { opacity: 1; }
@@ -275,6 +278,7 @@
     .media { gap: 8px; }
     .plate.half, .plate.third { grid-column: 1 / -1; }
     .plate.r32 .plate-in { aspect-ratio: 16 / 9; }
+    .plate.phone-tall .plate-in { aspect-ratio: 1080 / 2200; }   /* the card film's phone cut */
     .next, .build { padding: 64px 0; }
     .cards { grid-template-columns: 1fr; gap: 36px; }
     .contact-in { gap: 40px; }
@@ -328,39 +332,40 @@
 <section class="section hero dark" data-dark>
   <div class="wrap">
     <div class="hero-head" data-load>
-      <h1 class="title">Bianhua: a <b>website</b> and a <b>pitch deck</b> for an image coach, built around her <b>portrait</b> and her <b>own words</b>.</h1>
-      <p class="cat">Image and etiquette training | Website and pitch deck | 2025 to 2026</p>
+      <h1 class="title">Design Intervention: <b>one website</b> for a studio that builds <b>XR stages</b>, <b>exhibition pavilions</b>, film sets and interiors.</h1>
+      <p class="cat">Experiential design and fabrication | Website design and build | 2025</p>
     </div>
     <div class="meta" data-load>
       <div class="media">
 
-        <figure class="plate r169" data-flight>
-          <div class="plate-in"><video src="media/bianhua-card.mp4" poster="media/bianhua-card.jpg" muted loop playsinline autoplay preload="metadata" aria-label="Jyoti&rsquo;s portrait fades up out of the dark and her sentence arrives word by word, the claim in white, then the proof in grey"></video></div>
+        <figure class="plate r169 phone-tall" data-flight>
+          <div class="plate-in"><video poster="media/design-intervention-card.jpg" data-phone-poster="media/design-intervention-card-mobile.jpg" muted loop playsinline autoplay preload="metadata" aria-label="On air: the home page&rsquo;s headline in a sunset world on an LED wall. The camera pulls back past the jib camera to the XR stage and the studio around it, then pushes into the director&rsquo;s monitor, whose picture is the opening shot again"><source src="media/design-intervention-card-mobile.mp4" media="(max-width: 767px)"><source src="media/design-intervention-card.mp4"></video></div>
         </figure>
+        <script>if (matchMedia('(max-width: 767px)').matches) document.querySelectorAll('.plate-in video[data-phone-poster]').forEach(v => { v.poster = v.dataset.phonePoster; });</script>
 
         <figure class="plate r169">
-          <div class="plate-in"><video src="media/boards/coin.mp4" poster="media/boards/coin.webp" muted loop playsinline preload="none" aria-label="The Bianhua mark in clay: a gold and plum coin with the brush B pressed on in white, turning half a turn and settling"></video></div>
+          <div class="plate-in"><img src="media/boards/hero.webp" alt="The home page hero: The Cutting Edge of Visual Experiences, with a robotic camera arm facing a curved LED wall" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/hero.webp" alt="The site&rsquo;s first screen: Jyoti&rsquo;s portrait cut out against near-black, her sentence in white and grey, and two buttons" loading="lazy"></div>
+          <div class="plate-in"><img src="media/boards/rooms.webp" alt="The five services as five rooms rebuilt at full size, hung in a row: an XR stage, an exhibition booth, a film set, a CNC workshop and a living room, named XR Studios, Exhibition Design, Film and TV Production, Specialty Fabrication and Interior Design" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><video src="media/boards/expertise.mp4" poster="media/boards/expertise.webp" muted loop playsinline preload="none" aria-label="The Expertise section coming in as it does on the site: the heading, Image, Etiquette and Presence, then the ruled list of areas row by row, each with a solid icon, scrolling down to the button"></video></div>
+          <div class="plate-in"><img src="media/boards/menu.webp" alt="The Services menu, open, with a line for each of the five services" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/clients.webp" alt="Our Clients: twelve client logos in white, sized to an even weight in a hairline grid" loading="lazy"></div>
+          <div class="plate-in"><img src="media/boards/exhibition.webp" alt="The Exhibition Design page&rsquo;s title beside its room, rebuilt as a timber exhibition booth with the site&rsquo;s Services menu on its screen" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><video src="media/boards/room.mp4" poster="media/boards/room.webp" muted loop playsinline preload="none" aria-label="The workshop gallery: photos of Jyoti&rsquo;s sessions at one height, sliding across as the site&rsquo;s strip does"></video></div>
+          <div class="plate-in"><img src="media/boards/xr.webp" alt="The XR page&rsquo;s heading, Virtual Production, Real-world Results, in Design Intervention&rsquo;s own Arya Studio" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/phones.webp" alt="Three screens of the site on a phone: the portrait and sentence, the expertise list, the client wall" loading="lazy"></div>
+          <div class="plate-in"><img src="media/boards/pavilions.webp" alt="Three exhibition pavilions built by Design Intervention, from the Exhibition Design page&rsquo;s highlights" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/quote.webp" alt="The proposal deck&rsquo;s about slide: her line on image in the site&rsquo;s white and grey, beside a photo of her teaching" loading="lazy"></div>
+          <div class="plate-in"><img src="media/boards/activations.webp" alt="The home page&rsquo;s activations: exhibitions, studios, interactive installations and live shows, in a strip of Design Intervention&rsquo;s photographs" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/programme.webp" alt="The proposal deck&rsquo;s programme slide, The Professional You: six modules in a hairline table" loading="lazy"></div>
+          <div class="plate-in"><img src="media/boards/close.webp" alt="The close of the XR page in white on the company&rsquo;s orange: Ready to build your XR studio?" loading="lazy"></div>
         </figure>
 
       </div>
@@ -368,19 +373,19 @@
       <aside class="panel" id="panel">
         <div class="acc" data-open="true">
           <button class="acc-q" type="button" aria-expanded="true">Deliverables <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="12" r="10.5"/><path d="M12 7v10M7 12h10"/></svg></button>
-          <div class="acc-a"><div><p>Website design and engineering, content structure, client and expertise sections, pitch deck</p></div></div>
+          <div class="acc-a"><div><p>Site structure, website design and build, hosting and launch</p></div></div>
         </div>
         <div class="acc" data-open="false">
           <button class="acc-q" type="button" aria-expanded="false">Context <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="12" r="10.5"/><path d="M12 7v10M7 12h10"/></svg></button>
-          <div class="acc-a"><div><p>Jyoti Pathania Salwan coaches image, etiquette and soft skills, for individuals and for corporate teams, under the name Bianhua, the Daoist Buddhist word for metamorphosis. She has coached for more than two decades, is a NABET and Scottish Qualifications Authority certified trainer, and works with companies and universities, from IBM and Embassy Group to Christ University and Rashtriya Raksha University.</p></div></div>
+          <div class="acc-a"><div><p>Design Intervention is a Mumbai studio that designs and builds the rooms companies are seen in: XR and news studios, exhibition pavilions, film sets, sales offices and specialty builds. Its work includes the Adani Group's corporate XR studio and a Republic Day tableau that won the President's Gold in 2012. Online, it was still a site from years earlier that listed every discipline it had ever practised, from game shows to face masks, while the work it sells today lived in a profile deck.</p></div></div>
         </div>
         <div class="acc" data-open="false">
           <button class="acc-q" type="button" aria-expanded="false">Challenge <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="12" r="10.5"/><path d="M12 7v10M7 12h10"/></svg></button>
-          <div class="acc-a"><div><p>Jyoti teaches that an image is what people perceive, remember and experience, so her own had to pass the same test. Her site and her proposals reach a client before she does. Both had to look as composed as she does, say what she does in her own words, and stay easy to change as her client list and programmes grow.</p></div></div>
+          <div class="acc-a"><div><p>Its buyers are corporate teams planning a pavilion or a studio, broadcasters and film crews, and design firms looking for someone to build their drawings. Each arrives with one job in mind and needs to see quickly that this studio has built it before, for names they know. Five lines of work as far apart as an LED volume and a CNC workshop could easily read as five small companies. The brief asked for a page per service, the flagship work up front and a direct way to start a project.</p></div></div>
         </div>
         <div class="acc" data-open="false">
           <button class="acc-q" type="button" aria-expanded="false">Solution <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="12" r="10.5"/><path d="M12 7v10M7 12h10"/></svg></button>
-          <div class="acc-a"><div><p>I let her presence lead. The site opens on her portrait, cut out against near-black, and one sentence in two tones: who she is in white, her credentials in grey. The rest stays as quiet: Inter in three weights, thin rules that hold both her client wall and her areas of expertise, and her three pillars, Image, Etiquette and Presence, set large on a single line.</p><p>The finish is in the small things. Every client logo is set in white and sized by eye, so a bold wordmark and a thin script carry the same weight. Sections fade in as you reach them, the long expertise list stays in view until its last line is read, and one tap saves her contact card to a phone. When she needed a proposal for a prospective client, I rebuilt her deck on the same system, with her content as written, set in Arial so it opens the same on any machine. The site is live under her name, and the deck is an editable file she can keep using.</p></div></div>
+          <div class="acc-a"><div><p>I built the site the way the studio sells, with a page for each line of work: XR studios, exhibitions, film and TV, specialty fabrication and interiors. Every one of them opens the same way, on a title and a picture of that kind of room, so the five read as one studio. Each page then hands over to the real thing, Design Intervention's own studios, pavilions and sets, brought out of the profile decks they had lived in. For this case study I rebuilt the site’s five rooms at full size, as places you could stand in; on the site they stay small isometric pictures.</p><p>Everything else stays quiet: white pages in the system's own type, headings and pictures that rise out of a soft blur as they arrive, and the company's orange kept for labels, the active link and the call to action that closes each service page. The site went live in November 2025 at mumbai.designintervention.biz, and the company's own domain now opens on a choice between its Mumbai and Goa branches.</p></div></div>
         </div>
       </aside>
     </div>
@@ -405,7 +410,7 @@
       </a>
       <a class="card" href="../../#ascii-hero">
         <div class="card-media">
-          <div class="card-pic"><video src="../../work/ascii-hero.mp4" poster="../../work/ascii-hero.jpg" muted loop playsinline preload="none"></video></div>
+          <div class="card-pic"><video src="../../media/ascii-hero.mp4" poster="../../media/ascii-hero.jpg" muted loop playsinline preload="none"></video></div>
           <span class="cursor-tag" aria-hidden="true">( Open project )</span>
           <span class="mark tl" aria-hidden="true"></span><span class="mark tr" aria-hidden="true"></span><span class="mark bl" aria-hidden="true"></span><span class="mark br" aria-hidden="true"></span>
         </div>
@@ -689,7 +694,7 @@
     function build() {
       dpr = Math.min(devicePixelRatio || 1, 2);
       W = box.clientWidth; H = box.clientHeight;
-      if (!W || !H) return;   // not laid out yet (a hidden or zero-width window); resize builds it
+      if (!W || !H) { parts = []; return; }   // not laid out yet (a hidden window); built again once in view
       canvas.width = W * dpr; canvas.height = H * dpr;
       const off = document.createElement('canvas'), o = off.getContext('2d');
       off.width = W; off.height = H;
@@ -738,6 +743,7 @@
     const start = () => { if (!raf && visible) raf = requestAnimationFrame(draw); };
     new IntersectionObserver(entries => entries.forEach(en => {
       visible = en.isIntersecting;
+      if (visible && !parts.length) build();
       if (en.intersectionRatio >= 0.8 && state === 'idle' && !still) fall();
       start();
     }), { threshold: [0, 0.25, 0.5, 0.75, 0.8] }).observe(box);

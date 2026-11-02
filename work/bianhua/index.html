@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>TrackFlow · Website and app · Abhishek Mankotia</title>
-<meta name="description" content="TrackFlow, a website personalisation product: a pixel brand, a website whose hero rewrites itself for each visitor, and an app where a rule reads as cause and effect.">
+<title>Bianhua · Website and pitch deck · Abhishek Mankotia</title>
+<meta name="description" content="A website and a pitch deck for Jyoti Pathania Salwan, an image and etiquette coach, built around her portrait and her own words.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300&family=Instrument+Serif&display=swap" rel="stylesheet">
@@ -179,7 +179,7 @@
   .acc-a p + p { margin-top: -6px; }
 
   /* Next projects, after the homepage's cards. */
-  .next { padding: 128px 0; }
+  .next { padding: 128px 0; overflow-x: clip; }   /* the cards' corner marks wait 22px outside them; on phones they widened the page */
   .next-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 40px; margin-bottom: 54px; }
   .h-big { margin: 0; font: 400 3vw/0.9 var(--serif); text-transform: uppercase; }
   .h-big b { font-family: var(--display); font-weight: 700; letter-spacing: -0.01em; }
@@ -275,7 +275,6 @@
     .media { gap: 8px; }
     .plate.half, .plate.third { grid-column: 1 / -1; }
     .plate.r32 .plate-in { aspect-ratio: 16 / 9; }
-    .plate.phone-tall .plate-in { aspect-ratio: 1080 / 2200; }   /* the card film's phone cut */
     .next, .build { padding: 64px 0; }
     .cards { grid-template-columns: 1fr; gap: 36px; }
     .contact-in { gap: 40px; }
@@ -329,49 +328,39 @@
 <section class="section hero dark" data-dark>
   <div class="wrap">
     <div class="hero-head" data-load>
-      <h1 class="title">TrackFlow: a <b>brand</b>, a <b>website</b> and an <b>app</b> built around one idea, that <b>inbound</b> should be as personal as outbound.</h1>
-      <p class="cat">Website personalisation | Brand, website and product | 2025</p>
+      <h1 class="title">Bianhua: a <b>website</b> and a <b>pitch deck</b> for an image coach, built around her <b>portrait</b> and her <b>own words</b>.</h1>
+      <p class="cat">Image and etiquette training | Website and pitch deck | 2025 to 2026</p>
     </div>
     <div class="meta" data-load>
       <div class="media">
 
-        <figure class="plate r169 phone-tall" data-flight>
-          <div class="plate-in"><video poster="media/trackflow-card.jpg" data-phone-poster="media/trackflow-card-mobile.jpg" muted loop playsinline autoplay preload="metadata"><source src="media/trackflow-card-mobile.mp4" media="(max-width: 767px)"><source src="media/trackflow-card.mp4"></video></div>
+        <figure class="plate r169" data-flight>
+          <div class="plate-in"><video src="media/bianhua-card.mp4" poster="media/bianhua-card.jpg" muted loop playsinline autoplay preload="metadata" aria-label="Jyoti&rsquo;s portrait fades up out of the dark and her sentence arrives word by word, the claim in white, then the proof in grey"></video></div>
         </figure>
-        <script>if (matchMedia('(max-width: 767px)').matches) document.querySelectorAll('.plate-in video[data-phone-poster]').forEach(v => { v.poster = v.dataset.phonePoster; });</script>
 
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/mark.webp" alt="The TrackFlow lockup in white on the brand red: a pixel compass beside TRACK and FLOW stacked in pixel letters" loading="lazy"></div>
+          <div class="plate-in"><video src="media/boards/coin.mp4" poster="media/boards/coin.webp" muted loop playsinline preload="none" aria-label="The Bianhua mark in clay: a gold and plum coin with the brush B pressed on in white, turning half a turn and settling"></video></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/hero.webp" alt="The website&rsquo;s hero line on warm paper: make each site visit as personal as a sales call, with a sales call in red" loading="lazy"></div>
+          <div class="plate-in"><img src="media/boards/hero.webp" alt="The site&rsquo;s first screen: Jyoti&rsquo;s portrait cut out against near-black, her sentence in white and grey, and two buttons" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><video src="media/boards/demo.mp4" poster="media/boards/demo.webp" muted loop playsinline preload="none" aria-label="The hero demo: a made-up SaaS page rewrites its headline, line and button as the visitor&rsquo;s source changes from direct to Y Combinator, G2 and GitHub"></video></div>
+          <div class="plate-in"><video src="media/boards/expertise.mp4" poster="media/boards/expertise.webp" muted loop playsinline preload="none" aria-label="The Expertise section coming in as it does on the site: the heading, Image, Etiquette and Presence, then the ruled list of areas row by row, each with a solid icon, scrolling down to the button"></video></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/outbound.webp" alt="The website&rsquo;s first section: outbound is personal, inbound should be too, beside four cards for triggers, traffic sources, operations and integrations" loading="lazy"></div>
+          <div class="plate-in"><img src="media/boards/clients.webp" alt="Our Clients: twelve client logos in white, sized to an even weight in a hairline grid" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/visitors.webp" alt="The website&rsquo;s visitor table: three visitors, each with an intent level and a one line summary of their journey" loading="lazy"></div>
+          <div class="plate-in"><video src="media/boards/room.mp4" poster="media/boards/room.webp" muted loop playsinline preload="none" aria-label="The workshop gallery: photos of Jyoti&rsquo;s sessions at one height, sliding across as the site&rsquo;s strip does"></video></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/icons.webp" alt="Nine pixel icons in TrackFlow red on a grid of red hairlines" loading="lazy"></div>
+          <div class="plate-in"><img src="media/boards/phones.webp" alt="Three screens of the site on a phone: the portrait and sentence, the expertise list, the client wall" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/playbook.webp" alt="A playbook on the app&rsquo;s dotted canvas: one UTM trigger wired to two replace text operations and a modify CSS operation" loading="lazy"></div>
+          <div class="plate-in"><img src="media/boards/quote.webp" alt="The proposal deck&rsquo;s about slide: her line on image in the site&rsquo;s white and grey, beside a photo of her teaching" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/addnode.webp" alt="The app&rsquo;s Add Node menu: search, category chips and the list of triggers" loading="lazy"></div>
-        </figure>
-        <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/template.webp" alt="The Exit Intent Lead Magnet template: an exit intent trigger wired to a display overlay action" loading="lazy"></div>
-        </figure>
-        <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/templates.webp" alt="Three featured templates from the app: exit intent lead magnet, scroll engagement offer and timed engagement popup" loading="lazy"></div>
-        </figure>
-        <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/integration.webp" alt="The app&rsquo;s integration card: the head code that adds TrackFlow to any site, with the key left as a placeholder" loading="lazy"></div>
+          <div class="plate-in"><img src="media/boards/programme.webp" alt="The proposal deck&rsquo;s programme slide, The Professional You: six modules in a hairline table" loading="lazy"></div>
         </figure>
 
       </div>
@@ -379,19 +368,19 @@
       <aside class="panel" id="panel">
         <div class="acc" data-open="true">
           <button class="acc-q" type="button" aria-expanded="true">Deliverables <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="12" r="10.5"/><path d="M12 7v10M7 12h10"/></svg></button>
-          <div class="acc-a"><div><p>Pixel brand and icons carried through the website and app, marketing website with a live demo, product design and engineering of the playbook app, the tracking script and visitor analytics</p></div></div>
+          <div class="acc-a"><div><p>Website design and engineering, content structure, client and expertise sections, pitch deck</p></div></div>
         </div>
         <div class="acc" data-open="false">
           <button class="acc-q" type="button" aria-expanded="false">Context <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="12" r="10.5"/><path d="M12 7v10M7 12h10"/></svg></button>
-          <div class="acc-a"><div><p>TrackFlow changes what a website says to each visitor, by where they came from and what they do on the page, without anyone editing the site. One script goes in the head of any site, Webflow, WordPress, Shopify or hand built. It is for marketing and growth teams. Their sales colleagues already tailor every cold email and every call; the website, where inbound leads arrive, showed every one of them the same page.</p></div></div>
+          <div class="acc-a"><div><p>Jyoti Pathania Salwan coaches image, etiquette and soft skills, for individuals and for corporate teams, under the name Bianhua, the Daoist Buddhist word for metamorphosis. She has coached for more than two decades, is a NABET and Scottish Qualifications Authority certified trainer, and works with companies and universities, from IBM and Embassy Group to Christ University and Rashtriya Raksha University.</p></div></div>
         </div>
         <div class="acc" data-open="false">
           <button class="acc-q" type="button" aria-expanded="false">Challenge <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="12" r="10.5"/><path d="M12 7v10M7 12h10"/></svg></button>
-          <div class="acc-a"><div><p>Personalisation is hard to sell from a page that stays still, because the product is the page changing. The people who buy it run marketing and growth, not code, so a rule had to read as plain cause and effect: when this happens, do that. And the change had to land before the visitor saw the original copy, or the trick would show.</p></div></div>
+          <div class="acc-a"><div><p>Jyoti teaches that an image is what people perceive, remember and experience, so her own had to pass the same test. Her site and her proposals reach a client before she does. Both had to look as composed as she does, say what she does in her own words, and stay easy to change as her client list and programmes grow.</p></div></div>
         </div>
         <div class="acc" data-open="false">
           <button class="acc-q" type="button" aria-expanded="false">Solution <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="12" r="10.5"/><path d="M12 7v10M7 12h10"/></svg></button>
-          <div class="acc-a"><div><p>The site leads with the promise in sales terms: make each site visit as personal as a sales call. I made it show the idea before it explains it. Its hero is a working demo, a made-up SaaS page that rewrites its headline, line and button as the visitor&rsquo;s source changes from direct to Y Combinator, G2 or GitHub, each time with the same soft blur. Around it the brand is drawn in pixels, a compass mark and a set of icons in one red on warm paper, with every section framed in a hairline of the same red.</p><p>In the app I made a playbook a canvas of cause and effect: a trigger, such as a campaign source, an exit intent or a returning visitor, wired to operations that replace text, swap an image, open an overlay or redirect. Templates cover the common plays, from an exit intent offer to a headline that matches the campaign. The script holds the page back for a moment, so the original copy never flashes. In December the app went to black, white and grey, keeping colour only to tell a trigger from an operation. TrackFlow went live in July 2025, and its own site runs on it.</p></div></div>
+          <div class="acc-a"><div><p>I let her presence lead. The site opens on her portrait, cut out against near-black, and one sentence in two tones: who she is in white, her credentials in grey. The rest stays as quiet: Inter in three weights, thin rules that hold both her client wall and her areas of expertise, and her three pillars, Image, Etiquette and Presence, set large on a single line.</p><p>The finish is in the small things. Every client logo is set in white and sized by eye, so a bold wordmark and a thin script carry the same weight. Sections fade in as you reach them, the long expertise list stays in view until its last line is read, and one tap saves her contact card to a phone. When she needed a proposal for a prospective client, I rebuilt her deck on the same system, with her content as written, set in Arial so it opens the same on any machine. The site is live under her name, and the deck is an editable file she can keep using.</p></div></div>
         </div>
       </aside>
     </div>
@@ -405,23 +394,23 @@
       <a class="cta-link" href="../../#work">See all projects <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M1 9L9 1M3 1h6v6"/></svg></a>
     </div>
     <div class="cards">
+      <a class="card" href="../unifize/">
+        <div class="card-media">
+          <div class="card-pic"><video src="../unifize/media/unifize-card.mp4" poster="../unifize/media/unifize-card.jpg" muted loop playsinline preload="none"></video></div>
+          <span class="cursor-tag" aria-hidden="true">( Open project )</span>
+          <span class="mark tl" aria-hidden="true"></span><span class="mark tr" aria-hidden="true"></span><span class="mark bl" aria-hidden="true"></span><span class="mark br" aria-hidden="true"></span>
+        </div>
+        <div class="card-row"><h3 class="card-name">Unifize</h3><span>Brand / Website / Film</span></div>
+        <p class="card-desc">A voice, a design system and a new website for Unifize, grown from one idea: the coordination tax.</p>
+      </a>
       <a class="card" href="../../#ascii-hero">
         <div class="card-media">
-          <div class="card-pic"><video src="../../work/ascii-hero.mp4" poster="../../work/ascii-hero.jpg" muted loop playsinline preload="none"></video></div>
+          <div class="card-pic"><video src="../../media/ascii-hero.mp4" poster="../../media/ascii-hero.jpg" muted loop playsinline preload="none"></video></div>
           <span class="cursor-tag" aria-hidden="true">( Open project )</span>
           <span class="mark tl" aria-hidden="true"></span><span class="mark tr" aria-hidden="true"></span><span class="mark bl" aria-hidden="true"></span><span class="mark br" aria-hidden="true"></span>
         </div>
         <div class="card-row"><h3 class="card-name">ASCII Hero</h3><span>Code / Motion</span></div>
         <p class="card-desc">A WebGL shader that sets a studio film in live ASCII type, then resolves it into the real picture as you scroll.</p>
-      </a>
-      <a class="card" href="../../#sundial">
-        <div class="card-media">
-          <div class="card-pic"><img src="../../work/sundial.jpg" alt="Golden hour still from Sundial: a desk under long monstera shadows" loading="lazy"></div>
-          <span class="cursor-tag" aria-hidden="true">( Open project )</span>
-          <span class="mark tl" aria-hidden="true"></span><span class="mark tr" aria-hidden="true"></span><span class="mark bl" aria-hidden="true"></span><span class="mark br" aria-hidden="true"></span>
-        </div>
-        <div class="card-row"><h3 class="card-name">Sundial</h3><span>Film</span></div>
-        <p class="card-desc">A 60 second film concept: one designer, one room, one day, and a monstera's shadow on a concrete wall as the only clock.</p>
       </a>
     </div>
   </div>
@@ -700,7 +689,7 @@
     function build() {
       dpr = Math.min(devicePixelRatio || 1, 2);
       W = box.clientWidth; H = box.clientHeight;
-      if (!W || !H) { parts = []; return; }   // a window with no size yet (a hidden tab) has nothing to draw
+      if (!W || !H) return;   // not laid out yet (a hidden or zero-width window); resize builds it
       canvas.width = W * dpr; canvas.height = H * dpr;
       const off = document.createElement('canvas'), o = off.getContext('2d');
       off.width = W; off.height = H;

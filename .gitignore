@@ -1,9 +1,9 @@
-# Publish only the page, its video and the work section's media; everything else here stays local.
+# Publish only the page, its video, its media and the case studies; everything else here stays local.
 *
 !.gitignore
 !index.html
 !clip.mp4
+!media/
+!media/*
 !work/
-!work/*
-!project/
-!project/**
+!work/**

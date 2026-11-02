@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Unifize · Brand and website · Abhishek Mankotia</title>
-<meta name="description" content="A voice, a design system and a new website for Unifize, grown from one idea: the coordination tax, the time regulated teams lose chasing approvals.">
+<title>TrackFlow · Website and app · Abhishek Mankotia</title>
+<meta name="description" content="TrackFlow, a website personalisation product: a pixel brand, a website whose hero rewrites itself for each visitor, and an app where a rule reads as cause and effect.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300&family=Instrument+Serif&display=swap" rel="stylesheet">
@@ -275,6 +275,7 @@
     .media { gap: 8px; }
     .plate.half, .plate.third { grid-column: 1 / -1; }
     .plate.r32 .plate-in { aspect-ratio: 16 / 9; }
+    .plate.phone-tall .plate-in { aspect-ratio: 1080 / 2200; }   /* the card film's phone cut */
     .next, .build { padding: 64px 0; }
     .cards { grid-template-columns: 1fr; gap: 36px; }
     .contact-in { gap: 40px; }
@@ -328,48 +329,49 @@
 <section class="section hero dark" data-dark>
   <div class="wrap">
     <div class="hero-head" data-load>
-      <h1 class="title">Unifize: a <b>brand</b> and a <b>website</b> built around one idea, the <b>coordination tax</b>.</h1>
-      <p class="cat">Quality software | Brand, website and film | 2026</p>
+      <h1 class="title">TrackFlow: a <b>brand</b>, a <b>website</b> and an <b>app</b> built around one idea, that <b>inbound</b> should be as personal as outbound.</h1>
+      <p class="cat">Website personalisation | Brand, website and product | 2025</p>
     </div>
     <div class="meta" data-load>
       <div class="media">
 
-        <figure class="plate r169" data-flight>
-          <div class="plate-in"><video src="media/unifize-card.mp4" poster="media/unifize-card.jpg" muted loop playsinline autoplay preload="metadata"></video></div>
+        <figure class="plate r169 phone-tall" data-flight>
+          <div class="plate-in"><video poster="media/trackflow-card.jpg" data-phone-poster="media/trackflow-card-mobile.jpg" muted loop playsinline autoplay preload="metadata"><source src="media/trackflow-card-mobile.mp4" media="(max-width: 767px)"><source src="media/trackflow-card.mp4"></video></div>
         </figure>
+        <script>if (matchMedia('(max-width: 767px)').matches) document.querySelectorAll('.plate-in video[data-phone-poster]').forEach(v => { v.poster = v.dataset.phonePoster; });</script>
 
         <figure class="plate r169">
-          <div class="plate-in"><video src="media/boards/tile.mp4" poster="media/boards/tile.webp" muted loop playsinline preload="none" aria-label="The close section&rsquo;s 3D logo tile, blue lacquer with a chrome mark, turning on cobalt rings"></video></div>
+          <div class="plate-in"><img src="media/boards/mark.webp" alt="The TrackFlow lockup in white on the brand red: a pixel compass beside TRACK and FLOW stacked in pixel letters" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><video src="media/boards/platformfilm.mp4" poster="media/boards/platformfilm.webp" muted loop playsinline preload="none" aria-label="The platform hero film: one camera move through the product, from home to a signed change to the reports"></video></div>
+          <div class="plate-in"><img src="media/boards/hero.webp" alt="The website&rsquo;s hero line on warm paper: make each site visit as personal as a sales call, with a sales call in red" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/doors.webp" alt="The homepage&rsquo;s three ways in, each a small product scene: a change order, the four products, a medical devices complaint" loading="lazy"></div>
+          <div class="plate-in"><video src="media/boards/demo.mp4" poster="media/boards/demo.webp" muted loop playsinline preload="none" aria-label="The hero demo: a made-up SaaS page rewrites its headline, line and button as the visitor&rsquo;s source changes from direct to Y Combinator, G2 and GitHub"></video></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/symptoms.webp" alt="Four symptom cards from the homepage, each a mini record: closure sign-offs, three copies of one SOP, a supplier email thread, a change approval" loading="lazy"></div>
+          <div class="plate-in"><img src="media/boards/outbound.webp" alt="The website&rsquo;s first section: outbound is personal, inbound should be too, beside four cards for triggers, traffic sources, operations and integrations" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><video src="media/boards/taxfilm.mp4" poster="media/boards/taxfilm.webp" muted loop playsinline preload="none" aria-label="The coordination tax film: 75 steps, 54 of them coordination"></video></div>
+          <div class="plate-in"><img src="media/boards/visitors.webp" alt="The website&rsquo;s visitor table: three visitors, each with an intent level and a one line summary of their journey" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/sign.webp" alt="The 21 CFR Part 11 sign dialog from the product renders" loading="lazy"></div>
+          <div class="plate-in"><img src="media/boards/icons.webp" alt="Nine pixel icons in TrackFlow red on a grid of red hairlines" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><video src="media/boards/homefilm.mp4" poster="media/boards/homefilm.webp" muted loop playsinline preload="none" aria-label="The homepage hero film: a change control record, its checklist and thread"></video></div>
+          <div class="plate-in"><img src="media/boards/playbook.webp" alt="A playbook on the app&rsquo;s dotted canvas: one UTM trigger wired to two replace text operations and a modify CSS operation" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/diagram.webp" alt="The platform page&rsquo;s coexistence section: your systems stay, with Unifize as the governed layer between" loading="lazy"></div>
+          <div class="plate-in"><img src="media/boards/addnode.webp" alt="The app&rsquo;s Add Node menu: search, category chips and the list of triggers" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/dashboard.webp" alt="The change controls dashboard from the platform film: median closure down to 11 days, with September's closure time on hover" loading="lazy"></div>
+          <div class="plate-in"><img src="media/boards/template.webp" alt="The Exit Intent Lead Magnet template: an exit intent trigger wired to a display overlay action" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/reel.webp" alt="Six customer film covers from the homepage" loading="lazy"></div>
+          <div class="plate-in"><img src="media/boards/templates.webp" alt="Three featured templates from the app: exit intent lead magnet, scroll engagement offer and timed engagement popup" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/phones.webp" alt="Three pages on a phone: the homepage, the platform and medical devices" loading="lazy"></div>
+          <div class="plate-in"><img src="media/boards/integration.webp" alt="The app&rsquo;s integration card: the head code that adds TrackFlow to any site, with the key left as a placeholder" loading="lazy"></div>
         </figure>
 
       </div>
@@ -377,19 +379,19 @@
       <aside class="panel" id="panel">
         <div class="acc" data-open="true">
           <button class="acc-q" type="button" aria-expanded="true">Deliverables <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="12" r="10.5"/><path d="M12 7v10M7 12h10"/></svg></button>
-          <div class="acc-a"><div><p>Messaging, design system, website design and engineering, product visuals and films, lead and analytics pipeline</p></div></div>
+          <div class="acc-a"><div><p>Pixel brand and icons carried through the website and app, marketing website with a live demo, product design and engineering of the playbook app, the tracking script and visitor analytics</p></div></div>
         </div>
         <div class="acc" data-open="false">
           <button class="acc-q" type="button" aria-expanded="false">Context <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="12" r="10.5"/><path d="M12 7v10M7 12h10"/></svg></button>
-          <div class="acc-a"><div><p>Unifize is an AI platform for the work that crosses teams in regulated industries: the CAPAs, change orders and document reviews that have to close on time and hold up at audit. Its buyers run quality, regulatory and operations, and they know where the time goes. The investigation is a week of work; the rest is chasing sign-offs. The old site never said so. It sold features and the word collaboration, asked for a demo in ways that did not agree, and stood on a brand that was a blue and a logo and not much else.</p></div></div>
+          <div class="acc-a"><div><p>TrackFlow changes what a website says to each visitor, by where they came from and what they do on the page, without anyone editing the site. One script goes in the head of any site, Webflow, WordPress, Shopify or hand built. It is for marketing and growth teams. Their sales colleagues already tailor every cold email and every call; the website, where inbound leads arrive, showed every one of them the same page.</p></div></div>
         </div>
         <div class="acc" data-open="false">
           <button class="acc-q" type="button" aria-expanded="false">Challenge <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="12" r="10.5"/><path d="M12 7v10M7 12h10"/></svg></button>
-          <div class="acc-a"><div><p>Those buyers, in medical devices, pharma and aerospace, have seen every eQMS brochure ever printed and can tell a screenshot tour from a product in seconds. Every competitor was already selling them a feature list. The site had to name a problem they already feel, in their own words, and earn the product story from there, without one claim Unifize could not stand behind. It had to read well on the phone where a link is first opened, give sales leads worth preparing for, and stay in the hands of the people who write it.</p></div></div>
+          <div class="acc-a"><div><p>Personalisation is hard to sell from a page that stays still, because the product is the page changing. The people who buy it run marketing and growth, not code, so a rule had to read as plain cause and effect: when this happens, do that. And the change had to land before the visitor saw the original copy, or the trick would show.</p></div></div>
         </div>
         <div class="acc" data-open="false">
           <button class="acc-q" type="button" aria-expanded="false">Solution <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="12" r="10.5"/><path d="M12 7v10M7 12h10"/></svg></button>
-          <div class="acc-a"><div><p>Unifize's positioning had a name for the problem: the coordination tax, the hours spent chasing approvals, re-keying data and waiting on email, paid every day and budgeted nowhere. I made it the spine of the brand. The cost is always rust and Unifize is always blue, so the problem and the answer separate before a word is read. Drafting rails and hatched bands rule every page like a controlled document, the world these readers work in.</p><p>I kept the finish quiet. Each industry page follows one record. Product visuals are stylised but traced to recorded demos, and the films are scripted in code, so they can be re-rendered when the product changes. One demo form serves every page. Unifize now has a brand with a voice and a system, leads that arrive with their context, and a site its team edits and publishes from Notion, without a developer.</p></div></div>
+          <div class="acc-a"><div><p>The site leads with the promise in sales terms: make each site visit as personal as a sales call. I made it show the idea before it explains it. Its hero is a working demo, a made-up SaaS page that rewrites its headline, line and button as the visitor&rsquo;s source changes from direct to Y Combinator, G2 or GitHub, each time with the same soft blur. Around it the brand is drawn in pixels, a compass mark and a set of icons in one red on warm paper, with every section framed in a hairline of the same red.</p><p>In the app I made a playbook a canvas of cause and effect: a trigger, such as a campaign source, an exit intent or a returning visitor, wired to operations that replace text, swap an image, open an overlay or redirect. Templates cover the common plays, from an exit intent offer to a headline that matches the campaign. The script holds the page back for a moment, so the original copy never flashes. In December the app went to black, white and grey, keeping colour only to tell a trigger from an operation. TrackFlow went live in July 2025, and its own site runs on it.</p></div></div>
         </div>
       </aside>
     </div>
@@ -405,7 +407,7 @@
     <div class="cards">
       <a class="card" href="../../#ascii-hero">
         <div class="card-media">
-          <div class="card-pic"><video src="../../work/ascii-hero.mp4" poster="../../work/ascii-hero.jpg" muted loop playsinline preload="none"></video></div>
+          <div class="card-pic"><video src="../../media/ascii-hero.mp4" poster="../../media/ascii-hero.jpg" muted loop playsinline preload="none"></video></div>
           <span class="cursor-tag" aria-hidden="true">( Open project )</span>
           <span class="mark tl" aria-hidden="true"></span><span class="mark tr" aria-hidden="true"></span><span class="mark bl" aria-hidden="true"></span><span class="mark br" aria-hidden="true"></span>
         </div>
@@ -414,7 +416,7 @@
       </a>
       <a class="card" href="../../#sundial">
         <div class="card-media">
-          <div class="card-pic"><img src="../../work/sundial.jpg" alt="Golden hour still from Sundial: a desk under long monstera shadows" loading="lazy"></div>
+          <div class="card-pic"><img src="../../media/sundial.jpg" alt="Golden hour still from Sundial: a desk under long monstera shadows" loading="lazy"></div>
           <span class="cursor-tag" aria-hidden="true">( Open project )</span>
           <span class="mark tl" aria-hidden="true"></span><span class="mark tr" aria-hidden="true"></span><span class="mark bl" aria-hidden="true"></span><span class="mark br" aria-hidden="true"></span>
         </div>
@@ -698,6 +700,7 @@
     function build() {
       dpr = Math.min(devicePixelRatio || 1, 2);
       W = box.clientWidth; H = box.clientHeight;
+      if (!W || !H) { parts = []; return; }   // a window with no size yet (a hidden tab) has nothing to draw
       canvas.width = W * dpr; canvas.height = H * dpr;
       const off = document.createElement('canvas'), o = off.getContext('2d');
       off.width = W; off.height = H;

@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Gargoyle · Brand and website · Abhishek Mankotia</title>
-<meta name="description" content="A mark and a website for Gargoyle, a studio in Siliguri that builds smart homes only on Apple HomeKit: a stone guardian for a name, and a site that prices a home before anyone visits.">
+<title>Theatre AI · Website and product · Abhishek Mankotia</title>
+<meta name="description" content="A website and a clickable product for Theatre AI, the rights and consent layer for performers in India, built around one idea: consent is the license.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300&family=Instrument+Serif&display=swap" rel="stylesheet">
@@ -179,7 +179,7 @@
   .acc-a p + p { margin-top: -6px; }
 
   /* Next projects, after the homepage's cards. */
-  .next { padding: 128px 0; }
+  .next { padding: 128px 0; overflow-x: clip; }   /* the cards' hidden corner marks sit 22px outside; never widen the page */
   .next-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 40px; margin-bottom: 54px; }
   .h-big { margin: 0; font: 400 3vw/0.9 var(--serif); text-transform: uppercase; }
   .h-big b { font-family: var(--display); font-weight: 700; letter-spacing: -0.01em; }
@@ -329,54 +329,50 @@
 <section class="section hero dark" data-dark>
   <div class="wrap">
     <div class="hero-head" data-load>
-      <h1 class="title">Gargoyle: a <b>brand</b> and a <b>website</b> for a studio that builds <b>Apple HomeKit</b> homes in North Bengal.</h1>
-      <p class="cat">Home automation | Brand and website | 2024 to 2026</p>
+      <h1 class="title">Theatre AI: a <b>website</b> and a <b>product</b> built around one idea, <b>consent is the license</b>.</h1>
+      <p class="cat">Performer rights and AI | Scope, website and app | 2026</p>
     </div>
     <div class="meta" data-load>
       <div class="media">
 
-        <!-- On phones the card's tall cut lands here, so the plate takes its shape. The poster line is
-             scoped to the plate: the homepage's film, handed over in the flyer, keeps its own poster. -->
+        <!-- On phones the card's tall cut lands here, so the plate takes its shape. -->
         <figure class="plate r169 phone-tall" data-flight>
-          <div class="plate-in"><video poster="media/gargoyle-card.jpg" data-phone-poster="media/gargoyle-card-mobile.jpg" muted loop playsinline autoplay preload="metadata"><source src="media/gargoyle-card-mobile.mp4" media="(max-width: 767px)"><source src="media/gargoyle-card.mp4"></video></div>
+          <div class="plate-in"><video poster="media/theatre-ai-card.jpg" data-phone-poster="media/theatre-ai-card-mobile.jpg" muted loop playsinline autoplay preload="metadata"><source src="media/theatre-ai-card-mobile.mp4" media="(max-width: 767px)"><source src="media/theatre-ai-card.mp4"></video></div>
         </figure>
-        <script>if (matchMedia('(max-width: 767px)').matches) document.querySelectorAll('.plate-in video[data-phone-poster]').forEach(v => { v.poster = v.dataset.phonePoster; });</script>
+        <script>if (matchMedia('(max-width: 767px)').matches) document.querySelectorAll('video[data-phone-poster]').forEach(v => { v.poster = v.dataset.phonePoster; });</script>
 
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/stone.webp" alt="The mark as a carved charcoal figure on a parapet in low late-afternoon light, the name raised in the stone below it" loading="lazy"></div>
+          <div class="plate-in"><video src="media/boards/herofilm.mp4" poster="media/boards/herofilm.webp" muted loop playsinline preload="none" aria-label="The homepage hero&rsquo;s animation: portrait cards stream past a scanner line and turn into code as they cross it"></video></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/lockup.webp" alt="The Gargoyle lockup: the seated winged figure beside the wordmark, charcoal on warm cream" loading="lazy"></div>
+          <div class="plate-in"><img src="media/boards/profile.webp" alt="An actor&rsquo;s profile card in the app: Cast ID Verified, and the verification journey from sign up to the Cast ID badge" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/sizes.webp" alt="The mark at small sizes: the full figure on a cream app icon, and the head alone in a cream circle for the favicon" loading="lazy"></div>
+          <div class="plate-in"><img src="media/boards/screening.webp" alt="A licensing request screened against the actor&rsquo;s own rules for territory, training, duration and use type: four of four match, with Decline and Approve" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><video src="media/boards/day.mp4" poster="media/boards/day.webp" muted loop playsinline preload="none" aria-label="A concept for the next site: one scroll through a day in one house, from morning window light to the lit facade at night, each product at work"></video></div>
+          <div class="plate-in"><img src="media/boards/studios.webp" alt="The website&rsquo;s studio side: a talent search for license-ready performers, a license builder with training rights excluded, and the compliance engine" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/day-window.webp" alt="Concept, 07:00: the living room window at sunrise, the curtains open to 70 percent, Opens with the sun" loading="lazy"></div>
+          <div class="plate-in"><img src="media/boards/payout.webp" alt="An invoice ledger and a settlement card: gross payment, the platform fee and the actor&rsquo;s net payout" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/day-door.webp" alt="Concept, 15:00: the front door with its smart lock in afternoon sun, Locked when you leave" loading="lazy"></div>
+          <div class="plate-in"><img src="media/boards/demo.webp" alt="The website&rsquo;s demo booking form, filled in by a studio producer: your details first, then pick a time" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/day-audio.webp" alt="Concept, 20:00: a soundbar and a HomePod mini on the lit teak ledge, Music in every room" loading="lazy"></div>
+          <div class="plate-in"><img src="media/boards/identity.webp" alt="The app&rsquo;s vault setup: verify your identity with an Aadhaar card, PAN card or passport and a professional proof, then record a voice sample from a Hindi script in the browser" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/day-house.webp" alt="Concept: the house at night with the rooms marked and the estimate card, Priced before anyone visits" loading="lazy"></div>
+          <div class="plate-in"><img src="media/boards/consent.webp" alt="One vault asset&rsquo;s consent in edit mode: permitted use cases, territories, and AI training set to inference only" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/hero.webp" alt="The homepage hero set in the site&rsquo;s type: Apple HomeKit specialists, Smart homes for all, and its two buttons" loading="lazy"></div>
+          <div class="plate-in"><img src="media/boards/requests.webp" alt="Incoming license requests waiting for the actor, each with Review, Decline and Approve" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/estimate.webp" alt="The pricing estimator for a Siliguri pincode: rooms, lighting and features on the left, an itemised range from Gargoyle&rsquo;s own catalogue on the right" loading="lazy"></div>
+          <div class="plate-in"><img src="media/boards/license.webp" alt="A Synthetic Performance License opened in the app: its parties and scope, clauses checked against the consent matrix, and the usage logged against it" loading="lazy"></div>
         </figure>
         <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/system.webp" alt="The design system page&rsquo;s palette, buttons and toasts: cream, stone and charcoal surfaces with charcoal pills" loading="lazy"></div>
-        </figure>
-        <figure class="plate r169">
-          <div class="plate-in"><img src="media/boards/phones.webp" alt="Three screens of the site on a phone: the hero, the capabilities and the path" loading="lazy"></div>
+          <div class="plate-in"><img src="media/boards/system.webp" alt="The app&rsquo;s interface system: a white ledger card on hairlines, status chips as soft tints, and one red button for the decision" loading="lazy"></div>
         </figure>
 
       </div>
@@ -384,19 +380,19 @@
       <aside class="panel" id="panel">
         <div class="acc" data-open="true">
           <button class="acc-q" type="button" aria-expanded="true">Deliverables <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="12" r="10.5"/><path d="M12 7v10M7 12h10"/></svg></button>
-          <div class="acc-a"><div><p>Logo and wordmark, brand assets, design system, website design and engineering, a price estimator built on Gargoyle&rsquo;s own catalogue</p></div></div>
+          <div class="acc-a"><div><p>Product scope and acceptance plan, website design and engineering, product design and frontend for actors, studios and agencies, interface system, demo booking pipeline</p></div></div>
         </div>
         <div class="acc" data-open="false">
           <button class="acc-q" type="button" aria-expanded="false">Context <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="12" r="10.5"/><path d="M12 7v10M7 12h10"/></svg></button>
-          <div class="acc-a"><div><p>Gargoyle designs, installs and looks after smart homes in Siliguri and the hills around it, and builds them only on Apple HomeKit, with Apple and Aqara hardware. Its clients are homeowners who come to it by recommendation. It needed a mark for its name, and a website that could explain the service to someone hearing about it for the first time.</p></div></div>
+          <div class="acc-a"><div><p>Theatre AI is building the rights and consent layer for India&rsquo;s entertainment industry. Performers keep their voice, face and motion in a vault, decide how each may be used, and see every use. Studios find talent already cleared for the use they need and license it under an agreement drawn from that consent. Its founder, Nehal Jain, came to it as a product manager who also acted, after watching the 2023 writers&rsquo; strike. In January 2026 the company had a pitch deck and a long list of what it wanted, and no product.</p></div></div>
         </div>
         <div class="acc" data-open="false">
           <button class="acc-q" type="button" aria-expanded="false">Challenge <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="12" r="10.5"/><path d="M12 7v10M7 12h10"/></svg></button>
-          <div class="acc-a"><div><p>Home automation came with a reputation, and the brief for the site listed it: a separate app for every brand, software that stops being updated, wiring that has to go in while the house is built, and systems so complex only the installer can run them. Gargoyle&rsquo;s answer was everything in the Apple Home app, no personal data kept by Gargoyle, a retrofit at any stage, and a home its owner can change. The brand had to feel calm and lasting rather than gadget bright. The site had to make that case plainly, and answer the first question every buyer asks, what it will cost, before anyone visits.</p></div></div>
+          <div class="acc-a"><div><p>The category did not exist yet. Actors were hearing about voices and faces cloned without consent, studios had no standard way to license AI use, and talent lawyers were buried in contract formats that did not agree. The list asked for everything at once: casting calls, biometric approvals, locked contracts and payments, with security as a given. Theatre AI needed to know what to build first: a product it could put in front of actors, studios and agencies, and a site that made the idea clear to someone hearing it for the first time.</p></div></div>
         </div>
         <div class="acc" data-open="false">
           <button class="acc-q" type="button" aria-expanded="false">Solution <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="12" r="10.5"/><path d="M12 7v10M7 12h10"/></svg></button>
-          <div class="acc-a"><div><p>I took the name at its word. A gargoyle is the stone figure that watches over a building, so the mark is one: seated, its wings raised into an arch around an opening behind its head, cut as a single charcoal silhouette with one pale eye. It holds as an app icon and, cut down to the head, at favicon size. Two colours carry the whole brand, the mark&rsquo;s charcoal and a warm cream.</p><p>The website keeps those two colours and adds black, so its sections move between cream, charcoal and black. Headlines are set tall and condensed, with an italic serif for the human line, as in &ldquo;Smart homes for all.&rdquo; The pages walk through what a home can do, why everything runs in the Home app, and four steps from the first consultation to training and support. The pricing page answers the first question: a homeowner enters a pincode, the number of rooms and what they want, and gets an itemised range drawn from Gargoyle&rsquo;s own product list, with tax, installation and the consultation fee for their area, and a plain note that the final quote follows a site visit. A design system page sits behind it all, so every new page is built from the same parts. The site is built and awaiting launch.</p><p>I have since explored where the site could go next: one house through one day, a different part of it in each section, the light moving across its walls as you scroll and each product shown at work. The curtains open with the sun, the front door locks, the corridor lights itself, and the day ends on the same estimate.</p></div></div>
+          <div class="acc-a"><div><p>I wrote the scope that everything else was held to, and Nehal accepted it the evening I presented it. Phase one was trust and clearance, and it made every actor one promise: nothing can be used unless I allow it. Everything followed from that. In the product, the actor&rsquo;s consent is the policy itself: which uses, which territories, and whether AI may learn from the work or only perform with it. Studios search for talent it already clears, licenses are drawn from it, and every use is recorded against it for the actor to see.</p><p>On the website the product explains itself. In place of illustrations, each feature shows one of its objects at work: a request screened against an actor&rsquo;s terms, a gate a studio clears before anything is made, a payment traced to the actor&rsquo;s net payout. The app stays quiet, white cards on grey with hairline rules and one red, kept for the moments a decision is made. The finish is local: identity by Aadhaar, PAN or passport, proof by IMDb or a CINTAA card, a voice sample read from a Hindi or English script and recorded in the browser. Theatre AI has a live site that sends every demo request straight to the founder&rsquo;s Notion, and a clickable product for actors, studios and agencies, ready for its backend to be built against.</p></div></div>
         </div>
       </aside>
     </div>
@@ -416,12 +412,12 @@
           <span class="cursor-tag" aria-hidden="true">( Open project )</span>
           <span class="mark tl" aria-hidden="true"></span><span class="mark tr" aria-hidden="true"></span><span class="mark bl" aria-hidden="true"></span><span class="mark br" aria-hidden="true"></span>
         </div>
-        <div class="card-row"><h3 class="card-name">Unifize</h3><span>Brand / Website / Film</span></div>
-        <p class="card-desc">A voice, a design system and a new website for Unifize, grown from one idea: the coordination tax.</p>
+        <div class="card-row"><h3 class="card-name">Unifize</h3><span>Brand / Website</span></div>
+        <p class="card-desc">A brand and a website for Unifize, grown from one idea: the coordination tax, the time regulated teams lose chasing approvals.</p>
       </a>
       <a class="card" href="../../#ascii-hero">
         <div class="card-media">
-          <div class="card-pic"><video src="../../work/ascii-hero.mp4" poster="../../work/ascii-hero.jpg" muted loop playsinline preload="none"></video></div>
+          <div class="card-pic"><video src="../../media/ascii-hero.mp4" poster="../../media/ascii-hero.jpg" muted loop playsinline preload="none"></video></div>
           <span class="cursor-tag" aria-hidden="true">( Open project )</span>
           <span class="mark tl" aria-hidden="true"></span><span class="mark tr" aria-hidden="true"></span><span class="mark bl" aria-hidden="true"></span><span class="mark br" aria-hidden="true"></span>
         </div>
@@ -705,6 +701,7 @@
     function build() {
       dpr = Math.min(devicePixelRatio || 1, 2);
       W = box.clientWidth; H = box.clientHeight;
+      if (!W || !H) return;   // not laid out yet (a hidden window); the resize handler builds it later
       canvas.width = W * dpr; canvas.height = H * dpr;
       const off = document.createElement('canvas'), o = off.getContext('2d');
       off.width = W; off.height = H;
@@ -753,6 +750,7 @@
     const start = () => { if (!raf && visible) raf = requestAnimationFrame(draw); };
     new IntersectionObserver(entries => entries.forEach(en => {
       visible = en.isIntersecting;
+      if (visible && !parts.length) build();   // first laid out at zero width: build now that it shows
       if (en.intersectionRatio >= 0.8 && state === 'idle' && !still) fall();
       start();
     }), { threshold: [0, 0.25, 0.5, 0.75, 0.8] }).observe(box);
