@@ -1,13 +1,29 @@
 // POST /api/brief: a project brief from /contact, filed in Attio.
 // The Attio key lives only in the ATTIO_API_KEY environment variable on Vercel; the page never sees it.
 // Each brief becomes a person (matched on email), a company (matched on domain, when given),
-// a deal at the first stage, a note on the deal with the brief, and a task assigned to Abhishek.
+// a deal at the first stage with Budget, Timeline, Offer and Source filled, the brief as a note
+// on the deal and on the person, and a task assigned to Abhishek.
 // Token scopes: record_permission:read-write, object_configuration:read, note:read-write,
 // task:read-write, user_management:read.
 
 const ATTIO = 'https://api.attio.com/v2';
 const OWNER = process.env.ATTIO_OWNER_EMAIL || 'hello@amankotia.com';
 const STAGE = process.env.ATTIO_DEAL_STAGE || 'Lead';
+// Custom deal fields, by attribute ID so renaming a field in Attio can't break the form.
+const FIELD = {
+  budget: 'adfca14d-9dcf-445b-abc1-078a21b6fd2c',   // Budget (status)
+  timeline: '748db1e4-0840-4e55-8ffa-e6627bbd5ef1', // Timeline (select)
+  offer: 'd9b2dcee-45b6-4e21-8ceb-8de3aa581dd5',    // Offer (multi-select)
+  source: 'b1fa910d-325f-4a12-ad54-724f21d696f1',   // Source (select)
+};
+// The form's tick boxes, as the Offer options the outreach deals use.
+const OFFER_OF = {
+  'Brand and website rebuild': 'Site rebuild',
+  'Launch or explainer film': 'Launch film',
+  'Pitch deck to a first version': 'First version',
+  'Product demo or walkthrough': 'Demo videos',
+  'Something else': 'Something else',
+};
 const ORIGINS = (process.env.ALLOWED_ORIGINS ||
   'https://www.amankotia.com,https://amankotia.com')
   .split(',').map(s => s.trim()).filter(Boolean);
@@ -66,15 +82,28 @@ async function file(b) {
   });
   const personId = person.id.record_id;
 
-  const deal = await attio('POST', '/objects/deals/records', {
-    values: {
-      name: `Brief No. ${b.serial} · ${b.name}${domain ? ` · ${domain}` : ''}`,
-      stage: STAGE,
-      owner: OWNER,
-      associated_people: ref('people', personId),
-      ...(companyId ? { associated_company: ref('companies', companyId) } : {}),
-    },
-  });
+  const base = {
+    name: `Brief No. ${b.serial} · ${b.name}${domain ? ` · ${domain}` : ''}`,
+    stage: STAGE,
+    owner: OWNER,
+    associated_people: ref('people', personId),
+    ...(companyId ? { associated_company: ref('companies', companyId) } : {}),
+  };
+  const offers = [...new Set(b.needs.map(n => OFFER_OF[n]).filter(Boolean))];
+  const fields = {
+    ...(b.budget ? { [FIELD.budget]: b.budget } : {}),
+    ...(b.timeline ? { [FIELD.timeline]: b.timeline } : {}),
+    ...(offers.length ? { [FIELD.offer]: offers } : {}),
+    [FIELD.source]: 'Website form',
+  };
+  let deal;
+  try {
+    deal = await attio('POST', '/objects/deals/records', { values: { ...base, ...fields } });
+  } catch (err) {
+    // A changed or removed field must never lose a brief: file it without them (the note has it all).
+    console.error(err.message);
+    deal = await attio('POST', '/objects/deals/records', { values: base });
+  }
   const dealId = deal.id.record_id;
 
   const lines = [
@@ -86,10 +115,10 @@ async function file(b) {
     b.message ? `**Message:**\n\n${b.message}` : '**Message:** none',
     `Sent from the contact page, brief No. ${b.serial}.`,
   ];
-  await attio('POST', '/notes', {
-    parent_object: 'deals', parent_record_id: dealId,
-    title: `Brief No. ${b.serial}`, format: 'markdown', content: lines.join('\n\n'),
-  });
+  // The brief goes on the deal and, so it shows where replies land, on the person too.
+  const note = { title: `Brief No. ${b.serial}`, format: 'markdown', content: lines.join('\n\n') };
+  await attio('POST', '/notes', { parent_object: 'deals', parent_record_id: dealId, ...note });
+  await attio('POST', '/notes', { parent_object: 'people', parent_record_id: personId, ...note });
 
   await attio('POST', '/tasks', {
     content: clip(`Reply to ${b.name} (${b.email}): new brief for ${b.needs.join(', ') || 'a project'}; budget ${b.budget || 'not given'}; timeline ${b.timeline || 'not given'}.`, 2000),
