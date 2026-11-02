@@ -2,6 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>
+  // The Design Library used to live at this root and route on query strings (/?panel=…, /?view=…);
+  // its old links go on to its new home.
+  if (/[?&](panel|view|section|system|type|mode|grid|embed|livePalette)=/.test(location.search)) location.replace('/design-library/' + location.search + location.hash);
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Abhishek Mankotia</title>
 <meta name="theme-color" content="#000000">

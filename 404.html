@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Abhishek Mankotia</title>
+<meta name="robots" content="noindex">
+<script>
+  // Files the Design Library served from this root before it moved to /design-library/ go on there,
+  // old case study paths (project/) go to work/, and anything else goes to the homepage.
+  const p = location.pathname, rest = location.search + location.hash;
+  if (/^\/(assets|references|evidence|previews|blueprint-source|steel-source|conversion|interfere|plasticity)\//.test(p)) location.replace('/design-library' + p + rest);
+  else if (/^\/project\//.test(p)) location.replace(p.replace(/^\/project\//, '/work/') + rest);
+  else location.replace('/');
+</script>
+<p>Nothing here. <a href="/">Go to the homepage</a>.</p>
+</html>
