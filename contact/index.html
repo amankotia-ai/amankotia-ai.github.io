@@ -701,9 +701,9 @@
     }
     window.capturePostHogEvent?.(outcome === 'sent' ? 'contact_brief_submitted' : 'contact_brief_drafted');
     window.logPostHog?.('info', 'contact brief delivery completed', { delivery: outcome });
-    fillReceipt(b, outcome);
-    await tearOff();
-    submit.removeAttribute('aria-busy'); submitLabel.textContent = 'Send the brief';
+    // The brief has gone; whatever the tear-off animation does, the button must not stay on Sending.
+    try { fillReceipt(b, outcome); await tearOff(); }
+    finally { submit.removeAttribute('aria-busy'); submitLabel.textContent = 'Send the brief'; }
   });
 
   function fillReceipt(b, outcome) {
@@ -730,7 +730,12 @@
     const stage = sheet.parentElement;
     const y = stage.getBoundingClientRect().top - 32;
     if (Math.abs(y) > 24) {
-      if (lenis) await new Promise(r => lenis.scrollTo(stage, { offset: -32, duration: 0.9, onComplete: r }));
+      // Lenis skips onComplete when its scroll is interrupted (a wheel or trackpad flick mid-way)
+      // or when it is stopped, so never wait on it alone.
+      if (lenis) await Promise.race([
+        new Promise(r => lenis.scrollTo(stage, { offset: -32, duration: 0.9, force: true, onComplete: r })),
+        wait(1200),
+      ]);
       else { scrollBy({ top: y, behavior: still ? 'auto' : 'smooth' }); await wait(still ? 0 : 650); }
     }
     receipt.removeAttribute('aria-hidden'); receipt.inert = false;
