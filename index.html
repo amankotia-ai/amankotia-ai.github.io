@@ -204,8 +204,8 @@
   .reel-fill { background: currentColor; transform: scaleX(calc(var(--line, 1) * var(--played, 0))); }
 
   /* Work, after rauno.me's homepage: the showreel is the first card of a row pinned on the stage.
-     Scrolling on slides the row left by exactly the scroll and springs it down to a browsing zoom,
-     so the neighbours come into view. Every card is authored at the
+     Scrolling on slides the row left by exactly the scroll at full size (no zoom out; BROWSE_ZOOM
+     in the script), so the neighbours peek in at the edges. Every card is authored at the
      showreel's size and the row is scaled as a group (script sets the size, --n places each card).
      A project card is its colour with the name set huge: the name pans through the card faster
      than the card moves and hands over to the picture, which fills the card edge to edge as the card
@@ -914,7 +914,8 @@
   // the row moves left by exactly the scroll, so `step` of scroll brings the next card to the
   // middle once the row is at BROWSE_ZOOM. The zoom follows a spring toward a target scrubbed by
   // the first ZOOM_OUT of a card's scroll; the minimap's tracker follows its own spring.
-  const BROWSE_ZOOM = 0.6;
+  // BROWSE_ZOOM is 1: the row stays at the showreel's size and does not zoom out on scroll.
+  const BROWSE_ZOOM = 1;
   const GAP = 1 / 30;          // of the card width (rauno.me: 40 px on a 1200 px card)
   const ZOOM_OUT = 0.5;        // of one card's scroll
   const SLIDE_SPEED = 2;       // most a giant name may move, as a multiple of the card's own speed
