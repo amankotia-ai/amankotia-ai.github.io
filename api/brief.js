@@ -82,14 +82,16 @@ async function file(b) {
   });
   const personId = person.id.record_id;
 
+  const offers = [...new Set(b.needs.map(n => OFFER_OF[n]).filter(Boolean))];
+  // Named like the outreach deals, "Company · Offer"; the person stands in when no site is given.
+  // The brief number is only for the page's receipt, so it stays in the note.
   const base = {
-    name: `Brief No. ${b.serial} · ${b.name}${domain ? ` · ${domain}` : ''}`,
+    name: `${domain || b.name} · ${offers.join(' + ') || 'Project'}`,
     stage: STAGE,
     owner: OWNER,
     associated_people: ref('people', personId),
     ...(companyId ? { associated_company: ref('companies', companyId) } : {}),
   };
-  const offers = [...new Set(b.needs.map(n => OFFER_OF[n]).filter(Boolean))];
   const fields = {
     ...(b.budget ? { [FIELD.budget]: b.budget } : {}),
     ...(b.timeline ? { [FIELD.timeline]: b.timeline } : {}),
@@ -116,7 +118,7 @@ async function file(b) {
     `Sent from the contact page, brief No. ${b.serial}.`,
   ];
   // The brief goes on the deal and, so it shows where replies land, on the person too.
-  const note = { title: `Brief No. ${b.serial}`, format: 'markdown', content: lines.join('\n\n') };
+  const note = { title: 'Website brief', format: 'markdown', content: lines.join('\n\n') };
   await attio('POST', '/notes', { parent_object: 'deals', parent_record_id: dealId, ...note });
   await attio('POST', '/notes', { parent_object: 'people', parent_record_id: personId, ...note });
 
