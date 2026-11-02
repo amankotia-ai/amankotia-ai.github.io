@@ -180,7 +180,7 @@
   .acc-a p + p { margin-top: -6px; }
 
   /* Next projects, after the homepage's cards. */
-  .next { padding: 128px 0; }
+  .next { padding: 128px 0; overflow-x: clip; }   /* the cards' hidden corner marks sit 22px outside; never widen the page */
   .next-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 40px; margin-bottom: 54px; }
   .h-big { margin: 0; font: 400 3vw/0.9 var(--serif); text-transform: uppercase; }
   .h-big b { font-family: var(--display); font-weight: 700; letter-spacing: -0.01em; }
