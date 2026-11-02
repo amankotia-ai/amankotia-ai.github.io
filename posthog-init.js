@@ -79,7 +79,9 @@
       return;
     }
 
-    if (!readConsent()) {
+    // A page that must show nothing but its content (the private pitch pages in /for/) sets
+    // window.__POSTHOG_QUIET__: no consent bar, so PostHog stays in memory and stores nothing.
+    if (!readConsent() && !window.__POSTHOG_QUIET__) {
       if (document.body) showConsentBar();
       else document.addEventListener('DOMContentLoaded', showConsentBar, { once: true });
     }

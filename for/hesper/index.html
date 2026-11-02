@@ -15,6 +15,8 @@
 <meta name="twitter:title" content="Hesper AI, on film">
 <meta name="twitter:image" content="https://www.amankotia.com/for/hesper/poster.jpg">
 <link rel="icon" href="data:,">
+<script>window.__POSTHOG_QUIET__ = true;</script>
+<script src="/posthog-init.js"></script>
 <style>
   /* the film's own ground (Hesper's #14130F), so the frame's edges disappear */
   html, body { margin: 0; height: 100%; background: #14130f; overflow: hidden; }
@@ -27,6 +29,23 @@
   // where autoplay is blocked (iOS Low Power Mode), fall back to the browser's own play control
   const v = document.querySelector('video');
   v.play().catch(() => { v.controls = true; });
+
+  // PostHog: the page view comes from the loader; these say whether the film actually played, and
+  // whether it played through once (the loop wraps back to the start)
+  const prospect = 'hesper';
+  let played = false, watched = false, last = 0;
+  v.addEventListener('playing', () => {
+    if (played) return;
+    played = true;
+    window.capturePostHogEvent?.('pitch_film_played', { prospect });
+  });
+  v.addEventListener('timeupdate', () => {
+    if (!watched && v.currentTime + 1 < last) {
+      watched = true;
+      window.capturePostHogEvent?.('pitch_film_watched', { prospect, seconds: Math.round(v.duration) });
+    }
+    last = v.currentTime;
+  });
 </script>
 </body>
 </html>
