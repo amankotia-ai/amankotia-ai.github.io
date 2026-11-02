@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script src="/posthog-init.js"></script>
 <script>
   // The Design Library used to live at this root and route on query strings (/?panel=…, /?view=…);
   // its old links go on to its new home.
@@ -314,7 +315,7 @@
 <header class="hero-top">
   <nav class="hero-menu" aria-label="Primary">
     <a class="item" href="#work" aria-current="page"><span class="dot" aria-hidden="true"></span>Work</a>
-    <a class="item" href="#archive">Archive</a>
+    <a class="item" href="archive/">Archive</a>
   </nav>
   <h1 class="hero-name">( <b class="title">Abhishek Mankotia</b> )</h1>
   <nav class="hero-menu" aria-label="Secondary">
@@ -1346,6 +1347,8 @@
     if (still.matches || !lenis || !film || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     e.preventDefault();
     if (leaving || intro) return;
+    window.capturePostHogEvent?.('case_study_opened', { case_study: card.getAttribute('href') });
+    window.logPostHog?.('info', 'case study opened', { case_study: card.getAttribute('href') });
     lenis.stop();   // holds the page still; the glide is forced through
     leaving = { card, film, at: toCard(n, GLIDE, true), phase: 'glide', since: performance.now() };
     leaving.page = fetch(card.href).then(r => r.ok ? r.text() : null).catch(() => null);
@@ -1592,6 +1595,8 @@
     userPaused = video.paused;
     playBtn.setAttribute('aria-pressed', video.paused);
     playBtn.textContent = video.paused ? 'Play' : 'Pause';
+    window.capturePostHogEvent?.('reel_playback_toggled', { is_playing: !video.paused });
+    window.logPostHog?.('info', 'showreel playback changed', { is_playing: !video.paused });
   };
   playBtn.addEventListener('click', togglePlay);
 

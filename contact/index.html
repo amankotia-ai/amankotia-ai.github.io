@@ -2,6 +2,7 @@
 <html lang="en" class="dt">
 <head>
 <meta charset="utf-8">
+<script src="/posthog-init.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Contact · Abhishek Mankotia</title>
 <meta name="description" content="Start a project with Abhishek Mankotia, an independent designer and engineer: brand and website rebuilds, launch films made in code, and pitch decks taken to a first version.">
@@ -359,7 +360,7 @@
 <header class="top" id="nav">
   <nav class="top-menu" aria-label="Primary">
     <a class="item" href="../#work">Work</a>
-    <a class="item" href="../#archive">Archive</a>
+    <a class="item" href="../archive/">Archive</a>
   </nav>
   <a class="name" href="../">( <b>Abhishek Mankotia</b> )</a>
   <nav class="top-menu" aria-label="Secondary">
@@ -495,11 +496,11 @@
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
 <script>
 (() => {
-  // Where briefs go. With a Web3Forms access key (free, from web3forms.com, made for this
-  // address) the sheet posts to it and Web3Forms emails the brief on; without one, sending opens
-  // the visitor's mail app with the brief written out instead.
+  // Where briefs go. /api/brief is the Vercel function in api/brief.js, which files each brief
+  // in Attio (it holds the Attio key; this page never does). If it can't be reached, the page
+  // offers to send the brief by email instead.
   const EMAIL = 'hello@amankotia.com';
-  const WEB3FORMS_KEY = '';
+  const FORM_ENDPOINT = '/api/brief';
 
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const wait = ms => new Promise(r => setTimeout(r, ms));
@@ -586,7 +587,11 @@
 
   // Copy the address.
   document.querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', async () => {
-    try { await navigator.clipboard.writeText(EMAIL); b.textContent = 'Copied'; }
+    try {
+      await navigator.clipboard.writeText(EMAIL);
+      b.textContent = 'Copied';
+      window.capturePostHogEvent?.('contact_email_copied');
+    }
     catch (e) { b.textContent = 'Select it'; }
     setTimeout(() => { b.textContent = 'Copy'; }, 1600);
   }));
@@ -663,26 +668,18 @@
   const mailtoOf = b => `mailto:${EMAIL}?subject=${encodeURIComponent(subjectOf(b))}&body=${encodeURIComponent(bodyOf(b))}`;
 
   async function deliver(b) {
-    if (!WEB3FORMS_KEY) { location.href = mailtoOf(b); return 'drafted'; }
-    const res = await fetch('https://api.web3forms.com/submit', {
+    if (!FORM_ENDPOINT) { location.href = mailtoOf(b); return 'drafted'; }
+    const res = await fetch(FORM_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify({
-        access_key: WEB3FORMS_KEY,
-        subject: subjectOf(b),
-        from_name: 'amankotia.com',
-        name: b.name, email: b.email,
-        'Needs': b.needs.join(', '),
-        'Budget (USD)': b.budget || 'Not given',
-        'Timeline': b.timeline || 'Not given',
-        'Company website': b.company || 'Not given',
-        message: b.message || '(No message)',
-        'Brief number': b.serial,
+        name: b.name, email: b.email, company: b.company, needs: b.needs,
+        budget: b.budget, timeline: b.timeline, message: b.message, serial: b.serial,
         botcheck: field('botcheck').checked,
       }),
     });
     const data = await res.json().catch(() => ({}));
-    if (!res.ok || !data.success) throw new Error(data.message || `HTTP ${res.status}`);
+    if (!res.ok || !data.ok) throw new Error(data.error || `HTTP ${res.status}`);
     return 'sent';
   }
 
@@ -702,6 +699,8 @@
       status.hidden = false;
       return;
     }
+    window.capturePostHogEvent?.(outcome === 'sent' ? 'contact_brief_submitted' : 'contact_brief_drafted');
+    window.logPostHog?.('info', 'contact brief delivery completed', { delivery: outcome });
     fillReceipt(b, outcome);
     await tearOff();
     submit.removeAttribute('aria-busy'); submitLabel.textContent = 'Send the brief';

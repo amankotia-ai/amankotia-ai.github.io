@@ -1,8 +1,10 @@
-# Publish only the page, its video, its media, the case studies and the contact page; everything else here stays local.
+# Publish only the page, its video, its media, the case studies, the contact page and the archive; everything else here stays local.
 *
 !.gitignore
+!.env.example
 !index.html
 !404.html
+!posthog-init.js
 !clip.mp4
 !media/
 !media/*
@@ -10,3 +12,8 @@
 !work/**
 !contact/
 !contact/**
+!archive/
+!archive/**
+.env
+!api/
+!api/**

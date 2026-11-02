@@ -1,0 +1,1238 @@
+<!doctype html>
+<html lang="en" class="dt">
+<head>
+<meta charset="utf-8">
+<script src="/posthog-init.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Archive · Abhishek Mankotia</title>
+<meta name="description" content="The archive of Abhishek Mankotia, an independent designer and engineer: every board, film and screen from seven projects on one field to drag through, or sorted by project.">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400&family=Instrument+Serif&display=swap" rel="stylesheet">
+<style>
+  /* Navigating between this page and the homepage or a case study is a view transition, as there. */
+  @view-transition { navigation: auto; }
+  /* Archive: every piece from the case studies on one endless field that wraps in both directions,
+     dragged, flung, scrolled or pinched around, with the projects' own collages one switch away and
+     a project or a single piece opened beside its notes. The pieces fly between the three: there is
+     one print per piece, and it travels. The shell is the contact page's: the same nav and the same
+     dark finish, and the controls sit at the bottom so the nav keeps the top. */
+  :root {
+    --margin: max(40px, env(safe-area-inset-left), env(safe-area-inset-right));
+    --nav-top: max(28px, env(safe-area-inset-top));   /* the nav sits a little higher than the side margins */
+    --bar-bottom: max(24px, env(safe-area-inset-bottom));
+    --gap: 25px;
+    --grotesk: "Neue Haas Grotesk Text Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --display: "Neue Haas Grotesk Display Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --serif: "PP Editorial New", "Instrument Serif", "Times New Roman", serif;
+    --mono: "GT America Mono", "DM Mono", ui-monospace, Menlo, monospace;
+    --bg: #000; --fg: #fff;
+    --fg-64: rgba(255, 255, 255, 0.64); --fg-40: rgba(255, 255, 255, 0.4); --line: rgba(255, 255, 255, 0.16);
+    --out: cubic-bezier(.22, 1, .36, 1);
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html { background: var(--bg); }
+  html, body { margin: 0; height: 100%; overflow: hidden; overscroll-behavior: none; }
+  body { background: var(--bg); color: var(--fg); font: 400 14px/1.5 var(--grotesk); -webkit-tap-highlight-color: transparent; }
+  a { color: inherit; text-decoration: none; }
+  button { padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
+  img { display: block; }
+  .page { position: fixed; inset: 0; z-index: 1; opacity: 0; transition: opacity .4s ease; }   /* above the finish */
+  .page.in { opacity: 1; }
+  .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+  /* lightweight.info's page-background finish, as on the contact page. */
+  .finish { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
+  .finish i {
+    position: absolute; border-radius: 50%; transform: translate(-50%, -50%);
+    left: calc(50% + var(--x) / 1080 * 100lvh); top: calc(50% + var(--y) / 1080 * 100lvh);
+    width: calc(var(--size) / 1080 * 100lvh); height: calc(var(--size) / 1080 * 100lvh);
+  }
+  .finish .light { --x: -900; --y: -350; --size: 1650; opacity: 0.15; background: radial-gradient(50% 50% at 50% 50%, #fff 0, rgba(255, 255, 255, 0) 100%); }
+  .finish .shade { --x: 1020; --y: 699; --size: 1880; opacity: 0.5; background: radial-gradient(50% 50% at 50% 50%, #000 0, rgba(0, 0, 0, 0) 100%); }
+  .finish canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.6; }
+  .cover { position: fixed; inset: 0; background: #000; z-index: 99; opacity: 0; pointer-events: none; transition: opacity .6s cubic-bezier(.45, 0, .55, 1); }
+  .cover.on { opacity: 1; pointer-events: auto; }
+  .fx { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+  /* Top bar, as on the contact page, held at the top and difference blended over the pieces. */
+  .top {
+    position: fixed; left: var(--margin); right: var(--margin); top: var(--nav-top); z-index: 20;
+    display: grid; grid-template-columns: 1fr 1fr auto 1fr 1fr; column-gap: var(--gap); align-items: start;
+    text-transform: uppercase; color: #fff; mix-blend-mode: difference;
+  }
+  .top-menu { display: contents; }
+  .name { position: relative; margin: 0 8px; font: 400 17px/0.86 var(--serif); text-align: center; white-space: nowrap; text-transform: uppercase; }
+  .name b { font-family: var(--display); font-weight: 700; letter-spacing: -0.01em; }
+  .item {
+    position: relative; display: flex; align-items: center; gap: 8px; padding: 0 0 10px;
+    font: 300 12px/1 var(--mono); color: inherit; text-transform: uppercase; background: none; border: 0; cursor: pointer; white-space: nowrap;
+  }
+  .item::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: currentColor; }
+  .item .dot { display: block; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+  .top .item, .bar .item { opacity: 1; transition: opacity .5s ease; }
+  .top:hover .item, .bar:hover .item { opacity: 0.4; }
+  .top .item:hover, .bar .item:hover { opacity: 1; }
+  .item:focus-visible, .print:focus-visible, .plabel:focus-visible, .panel a:focus-visible, .panel button:focus-visible { outline: 1px solid currentColor; outline-offset: 4px; }
+  .field:focus-visible { outline: none; }
+
+  /* The field. The world layer carries the camera; cells are made as they come into view and let go
+     as they leave, each showing the piece its place on the 8 x 8 tile asks for. */
+  .field { position: fixed; inset: 0; overflow: hidden; touch-action: none; cursor: grab; outline: 0; transition: opacity .35s ease; }
+  .field.grabbing { cursor: grabbing; }
+  .field.off { opacity: 0; pointer-events: none; }
+  .world { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+  .cell { position: absolute; left: 0; top: 0; display: block; opacity: 0; transition: opacity .9s var(--out); -webkit-user-drag: none; user-select: none; }
+  .field.ready .cell { opacity: 1; }
+  .field.settled .cell { transition: none; }
+  .pic { position: absolute; inset: 0; display: block; transition: transform .5s cubic-bezier(.2, .7, .2, 1), opacity .5s ease; }
+  .pic img, .pic video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; user-select: none; -webkit-user-drag: none; }
+  .pic::after { content: ""; position: absolute; inset: 0; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12); pointer-events: none; }
+  .cell.hover .pic { transform: scale(1.04); }
+  .field.dim .cell:not(.lit) .pic { opacity: 0.32; }
+  .field.grabbing .cell .pic { transition: none; }
+
+  /* The lockup in the field's centre cell: the nav's name style, at the size of a piece. */
+  .lockup { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; text-align: center; pointer-events: none; }
+  .lockup .lk { font: 400 44px/0.86 var(--serif); text-transform: uppercase; white-space: nowrap; filter: url(#bleed); }
+  .lockup .lk b { font-family: var(--display); font-weight: 700; letter-spacing: -0.01em; }
+  .lockup .sub { font: 300 11px/1.5 var(--mono); text-transform: uppercase; color: var(--fg-40); }
+
+  /* Prints: one per piece, flown between the field, the collages and the detail views. */
+  .prints, .labels { position: fixed; inset: 0; pointer-events: none; }
+  .prints { z-index: 2; }
+  .labels { z-index: 3; }
+  .print { position: absolute; left: 0; top: 0; display: block; visibility: hidden; pointer-events: auto; transform-origin: 50% 50%; -webkit-user-drag: none; user-select: none; }
+  .print.shown { visibility: visible; }
+  .print .pic { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 18px 40px -14px rgba(0, 0, 0, 0.7); }
+  .print .hi, .print video { opacity: 0; transition: opacity .6s ease; }
+  .print .hi.on, .print video.on { opacity: 1; }
+  .print.hover .pic { transform: scale(1.035); }
+  .archive.dim .print:not(.lit) .pic { opacity: 0.32; }
+  .v-piece .print.main { cursor: default; }
+  .v-piece .print.main .pic { transform: none; }
+  .marker { position: absolute; left: 0; top: 0; border: 1px solid var(--fg-64); opacity: 0; transition: opacity .4s ease; pointer-events: none; }
+  .marker.on { opacity: 1; transition-delay: .5s; }
+  .marker::after { content: ""; position: absolute; left: 50%; bottom: -10px; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: var(--fg); }
+
+  /* Project names under the collages. */
+  .plabel {
+    position: absolute; left: 0; top: 0; display: flex; align-items: baseline; gap: 10px; white-space: nowrap; pointer-events: auto;
+    opacity: 0; visibility: hidden; transition: opacity .5s ease, visibility 0s linear .5s;
+  }
+  .labels.on .plabel { opacity: 1; visibility: visible; transition: opacity .7s var(--out), visibility 0s; transition-delay: calc(var(--i) * 60ms); }
+  .labels.on.dim .plabel:not(.lit) { opacity: 0.32; transition-delay: 0s; }
+  .plabel .n { font: 300 11px/1 var(--mono); color: var(--fg-40); }
+  .plabel .t { font: 400 22px/0.9 var(--serif); text-transform: uppercase; }
+
+  /* Notes beside a project or a piece. Its blocks rise in one after another, as on the contact page. */
+  .panel {
+    position: fixed; z-index: 4; top: 104px; bottom: 92px; right: var(--margin); width: clamp(300px, 28vw, 420px);
+    overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; visibility: hidden;
+  }
+  .panel::-webkit-scrollbar { display: none; }
+  .panel.on { visibility: visible; }
+  .panel > * { opacity: 0; transform: translateY(12px); transition: opacity .7s var(--out), transform .7s var(--out); transition-delay: calc(var(--i, 0) * 60ms + 180ms); }
+  .panel.in > * { opacity: 1; transform: none; }
+  .panel.out > * { opacity: 0; transform: translateY(-6px); transition-duration: .25s; transition-delay: 0s; }
+  .p-head { display: flex; align-items: center; justify-content: space-between; padding-bottom: 14px; border-bottom: 1px solid var(--line); font: 300 12px/1 var(--mono); text-transform: uppercase; color: var(--fg-64); font-variant-numeric: tabular-nums; }
+  .p-step { display: flex; gap: 6px; }
+  .p-step button { width: 30px; height: 30px; border: 1px solid var(--line); font: 300 13px/1 var(--mono); transition: border-color .3s ease, background-color .3s ease; }
+  .p-step button:hover { border-color: var(--fg-64); background: rgba(255, 255, 255, 0.06); }
+  .p-title { margin: 30px 0 0; font: 400 46px/0.9 var(--serif); text-transform: uppercase; text-wrap: balance; filter: url(#bleed); }
+  .p-title b { font-family: var(--display); font-weight: 700; letter-spacing: -0.01em; }
+  .p-tags { margin: 16px 0 0; font: 300 12px/1.4 var(--mono); text-transform: uppercase; color: var(--fg-40); }
+  .p-text { margin: 28px 0 0; max-width: 32em; font-size: 15px; line-height: 1.5; color: var(--fg-64); text-wrap: pretty; }
+  .p-list { margin: 34px 0 0; padding: 0; list-style: none; font: 300 12px/1.3 var(--mono); text-transform: uppercase; }
+  .p-list a { display: grid; grid-template-columns: 3.2em 1fr auto; padding: 11px 0; border-top: 1px solid var(--line); color: var(--fg-64); transition: color .3s ease; }
+  .p-list li:last-child a { border-bottom: 1px solid var(--line); }
+  .p-list a:hover, .p-list a.lit { color: var(--fg); }
+  .p-list .k { color: var(--fg-40); }
+  .p-part { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 34px 0 0; padding: 14px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .p-part span { font: 300 12px/1 var(--mono); text-transform: uppercase; color: var(--fg-40); }
+  .p-part a { font: 400 22px/0.9 var(--serif); text-transform: uppercase; }
+  .p-cta { display: flex; flex-wrap: wrap; gap: 14px 28px; margin: 34px 0 0; }
+  .p-cta .item { display: inline-flex; }
+
+  /* Bottom bar: what's here or the way back on the left, the view switch in the middle, the zoom on
+     the right. The nav's type, the nav's rules. */
+  .bar {
+    position: fixed; left: var(--margin); right: var(--margin); bottom: var(--bar-bottom); z-index: 20;
+    display: grid; grid-template-columns: 1fr auto 1fr; column-gap: var(--gap); align-items: end;
+    color: #fff; mix-blend-mode: difference; text-transform: uppercase; pointer-events: none;
+  }
+  .bar > * { pointer-events: auto; }
+  .bar-l { justify-self: start; display: flex; gap: 22px; }
+  .count { padding-bottom: 10px; font: 300 12px/1 var(--mono); }
+  .switch { display: flex; gap: 30px; }
+  .bar .item .dot { display: none; }
+  .bar .item[aria-current] .dot { display: block; }
+  .zoom { justify-self: end; display: flex; align-items: end; gap: 16px; transition: opacity .35s ease, visibility 0s; }
+  .zoom output { min-width: 3.6em; padding-bottom: 10px; font: 300 12px/1 var(--mono); text-align: center; font-variant-numeric: tabular-nums; }
+  .zoom .item { justify-content: center; min-width: 14px; }
+  .crumbs { display: none; gap: 22px; }
+  .bar[data-view="project"] .count, .bar[data-view="piece"] .count { display: none; }
+  .bar[data-view="project"] .crumbs, .bar[data-view="piece"] .crumbs { display: flex; }
+  .bar:not([data-view="field"]) .zoom { opacity: 0; visibility: hidden; transition: opacity .35s ease, visibility 0s linear .35s; }
+
+  /* A label that trails the pointer over a piece, as on the homepage. */
+  .tag {
+    position: fixed; left: 0; top: 0; z-index: 30; pointer-events: none; white-space: nowrap; padding: 7px 9px 6px;
+    font: 300 12px/1 var(--mono); text-transform: uppercase; color: #000; background: #fff; opacity: 0; transition: opacity .2s;
+  }
+  .tag.on { opacity: 1; }
+  .is-moving .tag { opacity: 0 !important; }
+  @media (hover: hover) and (pointer: fine) {
+    .cell[href], .print { cursor: none; }
+    .v-piece .print.main { cursor: default; }
+  }
+  @media not ((hover: hover) and (pointer: fine)) { .tag { display: none; } }
+
+  @media (max-width: 767px) {
+    :root { --margin: max(12px, env(safe-area-inset-left), env(safe-area-inset-right)); --nav-top: max(12px, env(safe-area-inset-top)); --bar-bottom: max(14px, env(safe-area-inset-bottom)); --gap: 12px; }
+    .top { grid-template-columns: 1fr; }
+    .top-menu { display: none; }
+    .name { font-size: 14px; }
+    .item { font-size: 11px; }
+    .count, .zoom output, .zoom [data-zoom], #crumb-project { display: none; }
+    .switch { gap: 20px; }
+    .lockup .lk { font-size: 40px; }
+    .plabel { gap: 6px; }
+    .plabel .t { font-size: 17px; }
+    .plabel .n { font-size: 10px; }
+    .panel { left: var(--margin); right: var(--margin); width: auto; bottom: calc(var(--bar-bottom) + 40px); }
+    .p-title { margin-top: 22px; font-size: 34px; }
+    .p-text { margin-top: 20px; font-size: 14px; }
+    .p-list, .p-part, .p-cta { margin-top: 24px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cell, .pic, .panel > *, .plabel, .marker { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="finish" aria-hidden="true"><i class="light"></i><i class="shade"></i><canvas></canvas></div>
+<svg class="fx" aria-hidden="true" focusable="false">
+  <!-- Grain bleed on the big type, as on the case study and contact pages. -->
+  <filter id="bleed" x="-5%" y="-40%" width="110%" height="180%" color-interpolation-filters="sRGB">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="1.8" result="spread"/>
+    <feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="2" seed="7" stitchTiles="stitch" result="noise"/>
+    <feComponentTransfer in="noise" result="grain">
+      <feFuncR type="linear" slope="1.6" intercept="-0.3"/>
+      <feFuncA type="linear" slope="0" intercept="1"/>
+    </feComponentTransfer>
+    <feColorMatrix in="grain" type="matrix" result="texture"
+      values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  1 0 0 0 0"/>
+    <feComposite in="spread" in2="texture" operator="arithmetic" k1="0.85" k2="0.12" k3="0" k4="0" result="grained"/>
+    <feColorMatrix in="grained" type="matrix" result="bled"
+      values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.6 0"/>
+    <feMerge><feMergeNode in="bled"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</svg>
+<div class="cover" id="cover"></div>
+<div class="page" id="page">
+<header class="top" id="nav">
+  <nav class="top-menu" aria-label="Primary">
+    <a class="item" href="../#work">Work</a>
+    <a class="item" href="./" aria-current="page"><span class="dot" aria-hidden="true"></span>Archive</a>
+  </nav>
+  <a class="name" href="../">( <b>Abhishek Mankotia</b> )</a>
+  <nav class="top-menu" aria-label="Secondary">
+    <a class="item" href="../#about">About</a>
+    <a class="item" href="../contact/">Contact</a>
+  </nav>
+</header>
+
+<main class="archive v-field" id="archive">
+  <h1 class="visually-hidden">Archive</h1>
+  <div class="field" id="field" tabindex="0" aria-label="The archive field. Drag, scroll or use the arrow keys to look around; plus and minus zoom."><div class="world" id="world"></div></div>
+  <div class="prints" id="prints"><div class="marker" id="marker"></div></div>
+  <div class="labels" id="labels"></div>
+  <aside class="panel" id="panel" aria-live="polite"></aside>
+  <!-- Every piece as a plain list, for screen readers and keyboards. -->
+  <nav class="visually-hidden" id="index" aria-label="Every project and piece"></nav>
+</main>
+
+<footer class="bar" id="bar" data-view="field">
+  <div class="bar-l">
+    <span class="count" id="count"></span>
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a class="item" href="?view=projects" id="crumb-all">← All projects</a>
+      <a class="item" href="" id="crumb-project"></a>
+    </nav>
+  </div>
+  <nav class="switch" aria-label="View">
+    <a class="item" href="./" data-view="field"><span class="dot" aria-hidden="true"></span>All work</a>
+    <a class="item" href="?view=projects" data-view="projects"><span class="dot" aria-hidden="true"></span>By project</a>
+  </nav>
+  <div class="zoom">
+    <button class="item" type="button" data-zoom="-1" aria-label="Zoom out">−</button>
+    <output id="readout" aria-label="Zoom">100%</output>
+    <button class="item" type="button" data-zoom="1" aria-label="Zoom in">+</button>
+    <button class="item" type="button" id="recenter">Recenter</button>
+  </div>
+</footer>
+<span class="tag" id="tag" aria-hidden="true"></span>
+</div>
+
+<script>
+(() => {
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const phoneQuery = matchMedia('(max-width: 767px)');
+  const $ = s => document.querySelector(s);
+  const pad = n => String(n).padStart(2, '0');
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  const mod = (a, n) => ((a % n) + n) % n;
+  const EASE = 'cubic-bezier(.22, 1, .36, 1)';
+
+  // The work: the seven case studies and their boards, films and screens, in each project's order.
+  // Titles are short names for the pieces; the notes are the case studies' own descriptions of them.
+  // `true` marks a board that is a still from a loop, which plays when the piece is opened.
+  const PROJECTS = [
+    { id: 'unifize', name: 'Unifize', tags: 'Brand / Website / Film',
+      about: 'A voice, a design system and a new website for Unifize, grown from one idea: the coordination tax, the time regulated teams lose chasing approvals.',
+      pieces: [
+        ['card', 'Card film'],
+        ['homefilm', 'Homepage film', 'The homepage hero film: a change control record, its checklist and thread.', true],
+        ['platformfilm', 'Platform film', 'The platform hero film: one camera move through the product, from home to a signed change to the reports.', true],
+        ['taxfilm', 'Coordination tax film', 'The coordination tax film: 75 steps, 54 of them coordination.', true],
+        ['dashboard', 'Change controls dashboard', "The change controls dashboard from the platform film: median closure down to 11 days, with September's closure time on hover."],
+        ['doors', 'Three ways in', 'The homepage’s three ways in, each a small product scene: a change order, the four products, a medical devices complaint.'],
+        ['symptoms', 'Symptom cards', 'Four symptom cards from the homepage, each a mini record: closure sign-offs, three copies of one SOP, a supplier email thread, a change approval.'],
+        ['sign', 'Sign dialog', 'The 21 CFR Part 11 sign dialog from the product renders.'],
+        ['tile', 'Logo tile', 'The close section’s 3D logo tile, blue lacquer with a chrome mark, turning on cobalt rings.', true],
+        ['phones', 'On a phone', 'Three pages on a phone: the homepage, the platform and medical devices.'],
+      ] },
+    { id: 'theatre-ai', name: 'Theatre AI', tags: 'Website / Product',
+      about: 'A website and a clickable product for Theatre AI, the rights and consent layer for performers in India, built around one idea: consent is the license.',
+      pieces: [
+        ['card', 'Card film'],
+        ['card-mobile', 'Card film, phone cut'],
+        ['herofilm', 'Hero animation', 'The homepage hero’s animation: portrait cards stream past a scanner line and turn into code as they cross it.', true],
+        ['profile', 'Actor profile', 'An actor’s profile card in the app: Cast ID Verified, and the verification journey from sign up to the Cast ID badge.'],
+        ['screening', 'Consent screening', 'A licensing request screened against the actor’s own rules for territory, training, duration and use type: four of four match, with Decline and Approve.'],
+        ['consent', 'Consent settings', 'One vault asset’s consent in edit mode: permitted use cases, territories, and AI training set to inference only.'],
+        ['license', 'Performance license', 'A Synthetic Performance License opened in the app: its parties and scope, clauses checked against the consent matrix, and the usage logged against it.'],
+        ['studios', 'Studio side', 'The website’s studio side: a talent search for license-ready performers, a license builder with training rights excluded, and the compliance engine.'],
+        ['payout', 'Ledger and payout', 'An invoice ledger and a settlement card: gross payment, the platform fee and the actor’s net payout.'],
+      ] },
+    { id: 'trackflow', name: 'TrackFlow', tags: 'Brand / Website / Product',
+      about: 'TrackFlow, a website personalisation product: a pixel brand, a website whose hero rewrites itself for each visitor, and an app where a rule reads as cause and effect.',
+      pieces: [
+        ['card', 'Card film'],
+        ['card-mobile', 'Card film, phone cut'],
+        ['mark', 'Lockup', 'The TrackFlow lockup in white on the brand red: a pixel compass beside TRACK and FLOW stacked in pixel letters.'],
+        ['hero', 'Hero line', 'The website’s hero line on warm paper: make each site visit as personal as a sales call, with a sales call in red.'],
+        ['demo', 'Hero demo', 'The hero demo: a made-up SaaS page rewrites its headline, line and button as the visitor’s source changes from direct to Y Combinator, G2 and GitHub.', true],
+        ['playbook', 'Playbook', 'A playbook on the app’s dotted canvas: one UTM trigger wired to two replace text operations and a modify CSS operation.'],
+        ['visitors', 'Visitor table', 'The website’s visitor table: three visitors, each with an intent level and a one line summary of their journey.'],
+        ['icons', 'Pixel icons', 'Nine pixel icons in TrackFlow red on a grid of red hairlines.'],
+        ['templates', 'Templates', 'Three featured templates from the app: exit intent lead magnet, scroll engagement offer and timed engagement popup.'],
+      ] },
+    { id: 'gargoyle', name: 'Gargoyle', tags: 'Brand / Website',
+      about: 'A mark and a website for Gargoyle, a studio in Siliguri that builds smart homes only on Apple HomeKit: a stone guardian for a name, and a site that prices a home before anyone visits.',
+      pieces: [
+        ['card', 'Card film'],
+        ['card-mobile', 'Card film, phone cut'],
+        ['stone', 'The mark in stone', 'The mark as a carved charcoal figure on a parapet in low late-afternoon light, the name raised in the stone below it.'],
+        ['lockup', 'Lockup', 'The Gargoyle lockup: the seated winged figure beside the wordmark, charcoal on warm cream.'],
+        ['sizes', 'Small sizes', 'The mark at small sizes: the full figure on a cream app icon, and the head alone in a cream circle for the favicon.'],
+        ['day-window', 'Opens with the sun', 'Concept, 07:00: the living room window at sunrise, the curtains open to 70 percent, Opens with the sun.'],
+        ['day-house', 'Priced before anyone visits', 'Concept: the house at night with the rooms marked and the estimate card, Priced before anyone visits.'],
+        ['estimate', 'Pricing estimator', 'The pricing estimator for a Siliguri pincode: rooms, lighting and features on the left, an itemised range from Gargoyle’s own catalogue on the right.'],
+        ['phones', 'On a phone', 'Three screens of the site on a phone: the hero, the capabilities and the path.'],
+      ] },
+    { id: 'bianhua', name: 'Bianhua', tags: 'Website / Deck',
+      about: 'A website and a pitch deck for Jyoti Pathania Salwan, an image and etiquette coach, built around her portrait and her own words.',
+      pieces: [
+        ['card', 'Card film'],
+        ['coin', 'The mark in clay', 'The Bianhua mark in clay: a gold and plum coin with the brush B pressed on in white, turning half a turn and settling.', true],
+        ['hero', 'First screen', 'The site’s first screen: Jyoti’s portrait cut out against near-black, her sentence in white and grey, and two buttons.'],
+        ['expertise', 'Expertise', 'The Expertise section coming in as it does on the site: the heading, Image, Etiquette and Presence, then the ruled list of areas row by row, each with a solid icon.', true],
+        ['clients', 'Our Clients', 'Our Clients: twelve client logos in white, sized to an even weight in a hairline grid.'],
+        ['phones', 'On a phone', 'Three screens of the site on a phone: the portrait and sentence, the expertise list, the client wall.'],
+        ['quote', 'Deck, about', 'The proposal deck’s about slide: her line on image in the site’s white and grey, beside a photo of her teaching.'],
+        ['programme', 'Deck, programme', 'The proposal deck’s programme slide, The Professional You: six modules in a hairline table.'],
+        ['room', 'Workshop gallery', 'The workshop gallery: photos of Jyoti’s sessions at one height, sliding across as the site’s strip does.', true],
+      ] },
+    { id: 'design-intervention', name: 'Design Intervention', tags: 'Website',
+      about: 'A website for Design Intervention, a Mumbai studio that designs and builds XR studios, exhibition pavilions, film sets and interiors: one page for each line of work, opening on the real thing.',
+      pieces: [
+        ['card', 'Card film'],
+        ['card-mobile', 'Card film, phone cut'],
+        ['hero', 'Home page hero', 'The home page hero: The Cutting Edge of Visual Experiences, with a robotic camera arm facing a curved LED wall.'],
+        ['rooms', 'Five rooms', 'The five services as five rooms rebuilt at full size, hung in a row: an XR stage, an exhibition booth, a film set, a CNC workshop and a living room.'],
+        ['exhibition', 'Exhibition Design', 'The Exhibition Design page’s title beside its room, rebuilt as a timber exhibition booth with the site’s Services menu on its screen.'],
+        ['xr', 'Virtual Production', 'The XR page’s heading, Virtual Production, Real-world Results, in Design Intervention’s own Arya Studio.'],
+        ['pavilions', 'Pavilions', 'Three exhibition pavilions built by Design Intervention, from the Exhibition Design page’s highlights.'],
+        ['close', 'Ready to build', 'The close of the XR page in white on the company’s orange: Ready to build your XR studio?'],
+      ] },
+    { id: 'freebyrd', name: 'Freebyrd', tags: 'Product / Mac app / Film',
+      about: 'Freebyrd, a Mac assistant in the notch: it sees what you are working on, remembers it on your Mac and follows through on what you promised. Designed and built end to end, with an explainer film rendered in code.',
+      pieces: [
+        ['card', 'Card film'],
+        ['cs-laptop', 'MacBook Pro', 'A 14 inch MacBook Pro rendered in Blender, Nina’s email open in Mail.'],
+        ['cs-glow', 'Something needs you', 'The closed notch glowing blue, with an orange Due icon on its right: something needs you.'],
+        ['cs-tilt', 'From the side', 'The MacBook Pro from the side, rendered in Blender: the island open over Mail, drafting the reply to Nina.'],
+        ['cs-draft', 'Draft card', 'The Draft card before a due date: the update to Nina written from the day’s work, with Copy as the only way out.'],
+        ['graph', 'Where the work moved', 'Apps as points on paper, and a blue path drawn between them in the order the work moved.', true],
+        ['read', 'Nina’s email', 'Nina’s email in Mail, close, with blue underlines drawn under her two asks.', true],
+        ['night', 'At night', 'At night the notch shows the moon, then a Tonight card with one thing and the morning it buys.', true],
+        ['follows', 'Follows the work', 'The notch keeps the thread, launch plan for Nina, while the line rolls through Notion, Figma, Claude Code and Arc.', true],
+      ] },
+  ];
+
+  // Each piece knows its thumbnail (for the field and the collages), its full still and its loop.
+  const PIECES = [];
+  PROJECTS.forEach((pr, n) => {
+    pr.n = n;
+    const media = `../work/${pr.id}/media/`, folder = pr.id === 'freebyrd' ? 'plates' : 'boards';
+    pr.pieces = pr.pieces.map(([id, title, text, loops], i) => {
+      const card = id.startsWith('card'), suffix = pr.id === 'freebyrd' && id === 'card' ? '-v5' : '';
+      const piece = {
+        project: pr, id, title, i,
+        text: text || (id === 'card' ? `The film on ${pr.name}’s card in the homepage’s work row.` : 'The same card film, cut for phones.'),
+        aspect: id === 'card-mobile' ? 1080 / 2200 : 16 / 9,
+        thumb: `media/${pr.id}-${id}.webp`,
+        still: card ? `${media}${pr.id}-${id}${suffix}.jpg` : `${media}${folder}/${id}.webp`,
+        film: card ? `${media}${pr.id}-${id}${suffix}.mp4` : loops ? `${media}${folder}/${id}.mp4` : null,
+      };
+      PIECES.push(piece);
+      return piece;
+    });
+  });
+  $('#count').textContent = `${PIECES.length} pieces · ${PROJECTS.length} projects`;
+
+  // ---- Routes. The field is the page itself; ?view=projects, ?project= and &piece= the rest.
+  function parse(search) {
+    const q = new URLSearchParams(search);
+    const project = PROJECTS.find(p => p.id === q.get('project'));
+    const piece = project && project.pieces.find(p => p.id === q.get('piece'));
+    if (piece) return { view: 'piece', project, piece };
+    if (project) return { view: 'project', project };
+    return { view: q.get('view') === 'projects' ? 'projects' : 'field' };
+  }
+  function link(r) {
+    if (r.view === 'piece') return `?project=${r.project.id}&piece=${r.piece.id}`;
+    if (r.view === 'project') return `?project=${r.project.id}`;
+    return r.view === 'projects' ? '?view=projects' : './';
+  }
+  function titleFor(r) {
+    const site = 'Archive · Abhishek Mankotia';
+    if (r.view === 'piece') return `${r.piece.title} · ${r.project.name} · ${site}`;
+    if (r.view === 'project') return `${r.project.name} · ${site}`;
+    return site;
+  }
+
+  // A small seeded random, so the field and the collages come out the same on every visit.
+  function seeded(seed) {
+    return () => {
+      seed = (seed + 0x6D2B79F5) | 0;
+      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  // ---- The field: an 8 x 8 tile of cells repeated without end, the lockup in its first cell. Pieces
+  // are shuffled into the tile, then swapped about until no piece touches another from its own
+  // project, edges and corners, across the tile's wrap too.
+  const COLS = 8, ROWS = 8, CW = 300, CH = 204;
+  const fieldSize = a => a >= 1 ? [256, 256 / a] : [184 * a, 184];
+  const tile = (() => {
+    const rand = seeded(11), n = COLS * ROWS;
+    const order = [null];
+    for (let k = 0; order.length < n; k++) order.push(PIECES[k % PIECES.length]);
+    for (let i = n - 1; i > 1; i--) { const j = 1 + Math.floor(rand() * i); [order[i], order[j]] = [order[j], order[i]]; }
+    const near = [[-1, -1, 1], [0, -1, 2], [1, -1, 1], [-1, 0, 2], [1, 0, 2], [-1, 1, 1], [0, 1, 2], [1, 1, 1]];
+    const clash = k => {
+      const p = order[k]; if (!p) return 0;
+      const c = k % COLS, r = Math.floor(k / COLS);
+      let cost = 0;
+      for (const [dc, dr, w] of near) {
+        const q = order[mod(r + dr, ROWS) * COLS + mod(c + dc, COLS)];
+        if (!q) continue;
+        if (q.project === p.project) cost += w * 4;
+        if (q.aspect < 1 && p.aspect < 1) cost += 1;
+      }
+      return cost;
+    };
+    for (let it = 0; it < 40000; it++) {
+      const a = 1 + Math.floor(rand() * (n - 1)), b = 1 + Math.floor(rand() * (n - 1));
+      if (a === b) continue;
+      const before = clash(a) + clash(b);
+      [order[a], order[b]] = [order[b], order[a]];
+      if (clash(a) + clash(b) > before) [order[a], order[b]] = [order[b], order[a]];
+    }
+    return order;
+  })();
+
+  const archive = $('#archive'), field = $('#field'), world = $('#world');
+  const prints = $('#prints'), marker = $('#marker'), labelsEl = $('#labels'), panel = $('#panel');
+  const bar = $('#bar'), tag = $('#tag'), readout = $('#readout');
+  let vw = innerWidth, vh = innerHeight, phone = phoneQuery.matches;
+  let s0 = 1, sMin = 0.5, sMax = 2;
+  const cam = { x: 0, y: 0, s: 1 };
+  let dirty = true, tween = null, inertia = null;
+
+  // The camera's resting scale: about five columns across a laptop, two across a phone.
+  function measure() {
+    vw = innerWidth; vh = innerHeight; phone = phoneQuery.matches;
+    const old = s0;
+    s0 = phone ? Math.max(0.6, vh / 1360) : Math.max(0.9, Math.min(vw / 1500, vh / 860));
+    sMin = s0 * 0.5; sMax = Math.min(2.2, s0 * 2);
+    cam.s = clamp(cam.s * s0 / old, sMin, sMax);
+    dirty = true;
+  }
+
+  // Cells: made when they come within a cell of the window, let go when they leave it.
+  const cells = new Map();
+  let intro = true, hovered = null;
+  function makeCell(i, j) {
+    const p = tile[mod(j, ROWS) * COLS + mod(i, COLS)];
+    let el;
+    if (!p) {
+      el = document.createElement('div');
+      el.className = 'cell lockup';
+      el.innerHTML = `<span class="lk">( <b>Archive</b> )</span><span class="sub">${PIECES.length} pieces from ${PROJECTS.length} projects<br>Drag to look around</span>`;
+      el.w = CW; el.h = CH;
+    } else {
+      el = document.createElement('a');
+      el.className = 'cell';
+      el.href = link({ view: 'piece', project: p.project, piece: p });
+      el.tabIndex = -1;
+      el.draggable = false;
+      el.setAttribute('aria-hidden', 'true');
+      el.innerHTML = `<span class="pic"><img src="${p.thumb}" alt="" draggable="false" decoding="async"></span>`;
+      [el.w, el.h] = fieldSize(p.aspect);
+      el.piece = p;
+      if (hovered && hovered.piece.project === p.project) el.classList.add('lit');
+    }
+    el.wx = i * CW; el.wy = j * CH;
+    el.style.width = el.w + 'px'; el.style.height = el.h + 'px';
+    el.style.transform = `translate(${el.wx - el.w / 2}px, ${el.wy - el.h / 2}px)`;
+    // On the way in the field fills from its centre out.
+    if (intro && !still) el.style.transitionDelay = Math.min(1100, 120 + Math.hypot(el.wx - cam.x, el.wy - cam.y) * cam.s * 0.9) + 'ms';
+    world.append(el);
+    return el;
+  }
+  function renderField() {
+    const s = cam.s, hw = vw / 2 / s, hh = vh / 2 / s;
+    world.style.transform = `translate3d(${vw / 2 - cam.x * s}px, ${vh / 2 - cam.y * s}px, 0) scale(${s})`;
+    const i0 = Math.ceil((cam.x - hw) / CW - 1.5), i1 = Math.floor((cam.x + hw) / CW + 1.5);
+    const j0 = Math.ceil((cam.y - hh) / CH - 1.5), j1 = Math.floor((cam.y + hh) / CH + 1.5);
+    const live = new Set();
+    for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) {
+      const key = i + ',' + j;
+      live.add(key);
+      if (!cells.has(key)) cells.set(key, makeCell(i, j));
+    }
+    cells.forEach((el, key) => { if (!live.has(key)) { if (el === hovered) hover(null); el.remove(); cells.delete(key); } });
+    readout.textContent = Math.round(cam.s / s0 * 100) + '%';
+  }
+  const cellRect = el => ({ x: vw / 2 + (el.wx - cam.x) * cam.s, y: vh / 2 + (el.wy - cam.y) * cam.s, w: el.w * cam.s, h: el.h * cam.s, z: 1 });
+
+  // The copy of each piece nearest the middle of the window, where its print takes over from.
+  function fieldRects() {
+    const reps = new Map(), best = new Map();
+    cells.forEach(el => {
+      if (!el.piece) return;
+      const r = cellRect(el);
+      if (r.x + r.w / 2 < 0 || r.x - r.w / 2 > vw || r.y + r.h / 2 < 0 || r.y - r.h / 2 > vh) return;
+      const d = Math.hypot(r.x - vw / 2, r.y - vh / 2);
+      if (!best.has(el.piece) || d < best.get(el.piece)) { best.set(el.piece, d); reps.set(el.piece, r); }
+    });
+    return reps;
+  }
+
+  // ---- Moving the camera: glides for the buttons and keys, inertia after a fling.
+  const quartOut = t => 1 - Math.pow(1 - t, 4);
+  function glide(to, dur) {
+    inertia = null;
+    if (still || !dur) { Object.assign(cam, to); tween = null; dirty = true; return; }
+    tween = { from: { ...cam }, to: { ...cam, ...to }, t0: performance.now(), dur };
+  }
+  function zoomTo(s, px = vw / 2, py = vh / 2, dur = 0) {
+    s = clamp(s, sMin, sMax);
+    const wx = cam.x + (px - vw / 2) / cam.s, wy = cam.y + (py - vh / 2) / cam.s;
+    const to = { s, x: wx - (px - vw / 2) / s, y: wy - (py - vh / 2) / s };
+    if (dur) glide(to, dur); else { Object.assign(cam, to); dirty = true; }
+  }
+  const recenter = () => glide({ x: 0, y: 0, s: s0 }, 550);
+
+  // Hovering a piece names it on the trailing tag and dims every piece from other projects, as the
+  // nav dims its other links.
+  function hover(el) {
+    if (el === hovered) return;
+    if (hovered) hovered.classList.remove('hover');
+    hovered = el;
+    if (el) {
+      el.classList.add('hover');
+      cells.forEach(c => c.classList.toggle('lit', !!c.piece && c.piece.project === el.piece.project));
+      field.classList.add('dim');
+      setTag(`( ${el.piece.project.name} · ${el.piece.title} )`);
+    } else {
+      field.classList.remove('dim');
+      setTag(null);
+    }
+  }
+
+  // Dragging. A press becomes a drag past 5 px; its last 100 ms of movement become the fling.
+  const pointers = new Map();
+  let drag = null, pinch = null, suppress = false;
+  field.addEventListener('pointerdown', e => {
+    if (view !== 'field') return;
+    if (e.pointerType === 'mouse' && e.button > 1) return;
+    if (e.button === 1) e.preventDefault();
+    tween = inertia = null;
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pointers.size === 2) {
+      const [a, b] = [...pointers.values()];
+      pinch = { d: Math.hypot(a.x - b.x, a.y - b.y) || 1, s: cam.s, mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2 };
+      drag = null; suppress = true;
+      try { field.setPointerCapture(e.pointerId); } catch (err) {}
+      hover(null);
+    } else if (pointers.size === 1) {
+      drag = { id: e.pointerId, x: e.clientX, y: e.clientY, x0: e.clientX, y0: e.clientY, live: false, touch: e.pointerType !== 'mouse', samples: [[e.timeStamp, e.clientX, e.clientY]] };
+      suppress = false;
+    }
+  });
+  field.addEventListener('pointermove', e => {
+    trail.x = e.clientX; trail.y = e.clientY;
+    const pt = pointers.get(e.pointerId);
+    if (!pt) {
+      if (e.pointerType === 'mouse' && !tween && !inertia) hover(e.target.closest('.cell[href]'));
+      return;
+    }
+    pt.x = e.clientX; pt.y = e.clientY;
+    if (pinch && pointers.size >= 2) {
+      const [a, b] = [...pointers.values()];
+      const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+      const s = clamp(pinch.s * Math.hypot(a.x - b.x, a.y - b.y) / pinch.d, sMin, sMax);
+      const wx = cam.x + (pinch.mx - vw / 2) / cam.s, wy = cam.y + (pinch.my - vh / 2) / cam.s;
+      cam.s = s; cam.x = wx - (mx - vw / 2) / s; cam.y = wy - (my - vh / 2) / s;
+      pinch.mx = mx; pinch.my = my; dirty = true;
+      return;
+    }
+    if (!drag || drag.id !== e.pointerId) return;
+    if (!drag.live) {
+      if (Math.hypot(e.clientX - drag.x0, e.clientY - drag.y0) < 5) return;
+      drag.live = suppress = true;
+      try { field.setPointerCapture(e.pointerId); } catch (err) {}
+      field.classList.add('grabbing');
+      document.documentElement.classList.add('is-moving');
+      hover(null);
+    }
+    cam.x -= (e.clientX - drag.x) / cam.s; cam.y -= (e.clientY - drag.y) / cam.s;
+    drag.x = e.clientX; drag.y = e.clientY;
+    drag.samples.push([e.timeStamp, e.clientX, e.clientY]);
+    while (drag.samples.length > 2 && e.timeStamp - drag.samples[0][0] > 100) drag.samples.shift();
+    dirty = true;
+  });
+  function release(e) {
+    if (!pointers.delete(e.pointerId)) return;
+    if (pinch) { if (pointers.size < 2) pinch = null; drag = null; return; }
+    if (!drag || drag.id !== e.pointerId) return;
+    if (drag.live && !still && e.type === 'pointerup') {
+      const s = drag.samples, [t0, x0, y0] = s[0], [t1, x1, y1] = s[s.length - 1];
+      if (t1 > t0 && e.timeStamp - t1 < 120) {
+        let vx = (x1 - x0) / (t1 - t0), vy = (y1 - y0) / (t1 - t0);
+        const cap = drag.touch ? 4 : 12, v = Math.hypot(vx, vy);   // px per ms
+        if (v > cap) { vx *= cap / v; vy *= cap / v; }
+        if (v > 0.05) inertia = { vx, vy };
+      }
+    }
+    drag = null;
+    field.classList.remove('grabbing');
+    document.documentElement.classList.remove('is-moving');
+  }
+  field.addEventListener('pointerup', release);
+  field.addEventListener('pointercancel', release);
+  field.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && !drag) hover(null); });
+  field.addEventListener('click', e => {
+    if (suppress) { e.preventDefault(); e.stopPropagation(); suppress = false; return; }
+    const c = e.target.closest('.cell[href]');
+    if (!c || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    e.preventDefault();
+    go({ view: 'piece', project: c.piece.project, piece: c.piece, cell: cellRect(c) });
+  });
+  field.addEventListener('dragstart', e => e.preventDefault());
+
+  // Scrolling pans (shift for sideways with a mouse wheel); a pinch on a trackpad arrives as a
+  // ctrl-wheel and zooms about the pointer, as does Safari's gesture event.
+  field.addEventListener('wheel', e => {
+    if (view !== 'field') return;
+    e.preventDefault();
+    tween = inertia = null;
+    const k = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? vh : 1;
+    if (e.ctrlKey || e.metaKey) {
+      zoomTo(cam.s * Math.exp(-e.deltaY * k * 0.01), e.clientX, e.clientY);
+    } else {
+      let dx = e.deltaX * k, dy = e.deltaY * k;
+      if (e.shiftKey && !dx) { dx = dy; dy = 0; }
+      cam.x += dx / cam.s; cam.y += dy / cam.s; dirty = true;
+    }
+    hover(null);
+  }, { passive: false });
+  let gestureScale = 1;
+  field.addEventListener('gesturestart', e => { e.preventDefault(); gestureScale = cam.s; });
+  field.addEventListener('gesturechange', e => { e.preventDefault(); zoomTo(gestureScale * e.scale, e.clientX, e.clientY); });
+
+  document.querySelectorAll('[data-zoom]').forEach(b => b.addEventListener('click', () => {
+    zoomTo((tween ? tween.to.s : cam.s) * (b.dataset.zoom > 0 ? 1.25 : 0.8), vw / 2, vh / 2, 320);
+  }));
+  $('#recenter').addEventListener('click', recenter);
+
+  // ---- Prints and their flights. Each print is laid out at its destination's size and flown there
+  // from wherever it was (its bounding box, read mid-flight if need be) by a transform that starts
+  // at the old box and settles to none, so it lands sharp.
+  PIECES.forEach(p => {
+    const a = document.createElement('a');
+    a.className = 'print';
+    a.href = link({ view: 'piece', project: p.project, piece: p });
+    a.tabIndex = -1;
+    a.draggable = false;
+    a.setAttribute('aria-label', `${p.project.name}, ${p.title}`);
+    a.innerHTML = `<span class="pic"><img src="${p.thumb}" alt="" draggable="false" decoding="async"></span>`;
+    a.piece = p; p.el = a; p.shown = false; p.token = 0;
+    prints.append(a);
+  });
+  function boxNow(p) {
+    const r = p.el.getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width, h: r.height, o: +getComputedStyle(p.el).opacity };
+  }
+  function fly(p, to, { from = null, dur = 900, delay = 0 } = {}) {
+    const el = p.el, start = from || (p.shown ? boxNow(p) : null), token = ++p.token;
+    el.getAnimations().forEach(a => a.cancel());
+    const end = `translate(${to.x - to.w / 2}px, ${to.y - to.h / 2}px)`;
+    el.style.width = to.w + 'px'; el.style.height = to.h + 'px';
+    el.style.transform = end;
+    el.style.opacity = to.o ?? 1;
+    el.style.zIndex = to.z ?? 1;
+    el.classList.add('shown'); p.shown = true;
+    if (!start || still || !dur) return Promise.resolve(token);
+    const anim = el.animate([
+      { transform: `translate(${start.x - to.w / 2}px, ${start.y - to.h / 2}px) scale(${start.w / to.w})`, opacity: start.o ?? 1 },
+      { transform: end, opacity: to.o ?? 1 },
+    ], { duration: dur, delay, easing: EASE, fill: 'backwards' });
+    return anim.finished.then(() => token, () => token);
+  }
+  // Fade a print out where it is (drifting a little, if asked), then put it away.
+  function drop(p, { dur = 380, dx = 0, dy = 0 } = {}) {
+    if (!p.shown) return;
+    const now = boxNow(p), el = p.el, token = ++p.token;
+    el.getAnimations().forEach(a => a.cancel());
+    p.el.classList.remove('hover', 'main');
+    const at = `translate(${now.x - now.w / 2}px, ${now.y - now.h / 2}px)`;
+    const to = `translate(${now.x - now.w / 2 + dx}px, ${now.y - now.h / 2 + dy}px)`;
+    el.style.width = now.w + 'px'; el.style.height = now.h + 'px';
+    el.style.transform = to; el.style.opacity = 0;
+    const done = () => { if (p.token === token) { el.classList.remove('shown'); p.shown = false; unload(p); } };
+    if (still || !dur) return done();
+    el.animate([{ transform: at, opacity: now.o }, { transform: to, opacity: 0 }], { duration: dur, easing: 'ease' }).finished.then(done, () => {});
+  }
+  function hideNow(p) { ++p.token; p.el.getAnimations().forEach(a => a.cancel()); p.el.classList.remove('shown', 'hover', 'main'); p.shown = false; unload(p); }
+
+  // Lay out a set of prints: those in the layout fly to it (from the field's copies, if given, or
+  // rising in where they land); the rest fade away.
+  function apply(layout, { from = null, dur = 900, delay = () => 0, enter = { dx: 0, dy: 18 }, exit = {} } = {}) {
+    PIECES.forEach(p => {
+      const to = layout.get(p);
+      if (!to) return drop(p, exit);
+      let start = null;
+      if (!p.shown) start = from && from.get(p) ? { ...from.get(p), o: 1 } : { ...to, x: to.x + enter.dx, y: to.y + enter.dy, o: 0 };
+      fly(p, to, { from: start, dur, delay: delay(p, to) });
+    });
+  }
+
+  // ---- Layouts, in window pixels.
+  // Collages: the project's card film in the middle and the rest overlapping it in a ring of set
+  // places, tall pieces to the sides, a little jittered and mirrored every other project so no two
+  // read alike. Sizes are by area, so a phone cut is as weighty as a board.
+  const RING = [
+    [-0.4, -0.38, 0.5, 12], [0.38, -0.4, 0.46, 8], [0.66, 0.02, 0.42, 13], [0.36, 0.4, 0.5, 11],
+    [-0.38, 0.42, 0.48, 9], [-0.66, -0.02, 0.4, 7], [0.0, -0.62, 0.4, 6], [0.02, 0.66, 0.4, 5], [0.72, -0.44, 0.34, 4],
+  ];
+  const SIDES = [2, 5, 8];
+  const collages = PROJECTS.map(pr => {
+    const rand = seeded(31 + pr.n * 7), flip = pr.n % 2 ? -1 : 1;
+    const [hero, ...rest] = pr.pieces;
+    const items = [{ p: hero, x: 0, y: 0, w: 1, h: 1 / hero.aspect, z: 10 }];
+    const free = RING.map((_, k) => k);
+    const take = want => { const k = free.find(want) ?? free[0]; free.splice(free.indexOf(k), 1); return RING[k]; };
+    rest.forEach(p => {
+      const [x, y, s, z] = take(p.aspect < 1 ? k => SIDES.includes(k) : k => !SIDES.includes(k));
+      const w = s * Math.sqrt(0.5625 * p.aspect);
+      items.push({ p, x: flip * (x * 0.9 + (rand() - 0.5) * 0.06), y: y * 0.9 + (rand() - 0.5) * 0.06, w, h: w / p.aspect, z });
+    });
+    const l = Math.min(...items.map(t => t.x - t.w / 2)), r = Math.max(...items.map(t => t.x + t.w / 2));
+    const t = Math.min(...items.map(t => t.y - t.h / 2)), b = Math.max(...items.map(t => t.y + t.h / 2));
+    return { items, cx: (l + r) / 2, cy: (t + b) / 2, w: r - l, h: b - t };
+  });
+
+  // Seven collages: four over three on a laptop, two across on a phone, all at one scale.
+  const labels = PROJECTS.map(pr => {
+    const a = document.createElement('a');
+    a.className = 'plabel';
+    a.href = link({ view: 'project', project: pr });
+    a.style.setProperty('--i', pr.n);
+    a.innerHTML = `<span class="n">${pad(pr.n + 1)}</span><span class="t">${pr.name}</span>`;
+    a.project = pr;
+    labelsEl.append(a);
+    return a;
+  });
+  function overview() {
+    const cols = phone ? 2 : 4, rows = Math.ceil(PROJECTS.length / cols);
+    const side = phone ? 12 : 40, top = phone ? 64 : 100, bottom = phone ? 62 : 86;
+    const gx = phone ? 10 : 36, gy = phone ? 14 : 22, label = phone ? 30 : 42;
+    const cw = (vw - 2 * side - (cols - 1) * gx) / cols, ch = (vh - top - bottom - (rows - 1) * gy) / rows;
+    const bw = cw * 0.94, bh = ch - label;
+    const k = Math.min(...collages.map(c => Math.min(bw / c.w, bh / c.h)));
+    const layout = new Map();
+    PROJECTS.forEach((pr, n) => {
+      const row = Math.floor(n / cols), inRow = Math.min(cols, PROJECTS.length - row * cols);
+      const col = n % cols, shift = (cols - inRow) * (cw + gx) / 2;
+      const cx = side + shift + col * (cw + gx) + cw / 2, cy = top + row * (ch + gy) + bh / 2;
+      const c = collages[n];
+      c.items.forEach(t => layout.set(t.p, { x: cx + (t.x - c.cx) * k, y: cy + (t.y - c.cy) * k, w: t.w * k, h: t.h * k, z: t.z }));
+      labels[n].style.transform = `translate(${cx}px, ${cy + c.h * k / 2 + (phone ? 10 : 16)}px) translateX(-50%)`;
+    });
+    return layout;
+  }
+
+  // Where a project or a piece is shown: left of the notes on a laptop, above them on a phone.
+  function region() {
+    if (phone) {
+      const top = 58, bottom = Math.round(vh * 0.46);
+      panel.style.top = bottom + 18 + 'px';
+      return { x: 12, y: top, w: vw - 24, h: bottom - top };
+    }
+    panel.style.top = '';
+    const pw = clamp(vw * 0.28, 300, 420), m = 40;
+    return { x: m, y: 104, w: vw - 2 * m - pw - 64, h: vh - 104 - 92 };
+  }
+
+  // A project: its pieces in justified rows, as many rows as gives them the most room.
+  function projectLayout(pr) {
+    const R = region(), g = phone ? 8 : 16, items = pr.pieces, total = items.reduce((s, p) => s + p.aspect, 0);
+    let best = null;
+    for (let r = 1; r <= items.length; r++) {
+      const rows = [[]];
+      let acc = 0;
+      items.forEach((p, i) => {
+        const last = rows[rows.length - 1];
+        if (last.length && rows.length < r && acc + p.aspect / 2 > total * rows.length / r) rows.push([]);
+        rows[rows.length - 1].push(p); acc += p.aspect;
+      });
+      const hs = rows.map(row => (R.w - (row.length - 1) * g) / row.reduce((s, p) => s + p.aspect, 0));
+      const used = hs.reduce((s, h) => s + h, 0), room = R.h - (rows.length - 1) * g;
+      const k = Math.min(1, room / used, 1);
+      const area = rows.reduce((s, row, i) => s + row.reduce((t, p) => t + (hs[i] * k) ** 2 * p.aspect, 0), 0);
+      if (!best || area > best.area) best = { rows, hs, k, area };
+    }
+    const layout = new Map(), { rows, hs, k } = best;
+    let y = R.y + (R.h - (rows.reduce((s, _, i) => s + hs[i] * k, 0) + (rows.length - 1) * g)) / 2;
+    rows.forEach((row, i) => {
+      const h = hs[i] * k, width = row.reduce((s, p) => s + h * p.aspect, 0) + (row.length - 1) * g;
+      let x = R.x + (R.w - width) / 2;
+      row.forEach(p => { const w = h * p.aspect; layout.set(p, { x: x + w / 2, y: y + h / 2, w, h, z: 2 }); x += w + g; });
+      y += h + g;
+    });
+    return layout;
+  }
+
+  // A piece: as large as the room allows, its project's other pieces in a strip below; an outline
+  // keeps its own place in the strip.
+  function pieceLayout(pr, piece) {
+    const R = region(), gap = phone ? 6 : 8, below = phone ? 16 : 26;
+    const sum = pr.pieces.reduce((s, p) => s + p.aspect, 0);
+    const sh = Math.min(phone ? 30 : 42, (R.w - (pr.pieces.length - 1) * gap) / sum);
+    const mh = R.h - sh - below;
+    let w = R.w, h = w / piece.aspect;
+    if (h > mh) { h = mh; w = h * piece.aspect; }
+    const top = R.y + (mh - h) / 2;   // the piece and its strip, centred together
+    const layout = new Map([[piece, { x: R.x + R.w / 2, y: top + h / 2, w, h, z: 20 }]]);
+    let x = R.x + (R.w - (sum * sh + (pr.pieces.length - 1) * gap)) / 2;
+    const y = top + h + below + sh / 2;
+    pr.pieces.forEach(p => {
+      const pw = sh * p.aspect;
+      if (p === piece) Object.assign(marker.style, { width: pw + 'px', height: sh + 'px', transform: `translate(${x}px, ${y - sh / 2}px)` });
+      else layout.set(p, { x: x + pw / 2, y, w: pw, h: sh, z: 3 });
+      x += pw + gap;
+    });
+    return layout;
+  }
+  function layoutFor(r) {
+    if (r.view === 'projects') return overview();
+    if (r.view === 'project') return projectLayout(r.project);
+    if (r.view === 'piece') return pieceLayout(r.project, r.piece);
+    return null;
+  }
+
+  // An opened piece swaps its thumbnail for the full still, and plays its loop if it has one.
+  function load(p) {
+    const pic = p.el.querySelector('.pic');
+    if (!p.hi) {
+      p.hi = new Image();
+      p.hi.className = 'hi'; p.hi.alt = ''; p.hi.draggable = false; p.hi.decoding = 'async';
+      p.hi.src = p.still;
+      pic.append(p.hi);
+      p.hi.decode().then(() => p.hi.classList.add('on'), () => {});
+    }
+    if (p.film && !p.video && !still) {
+      const v = document.createElement('video');
+      v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'auto';
+      v.setAttribute('playsinline', ''); v.setAttribute('aria-hidden', 'true');
+      v.addEventListener('playing', () => v.classList.add('on'), { once: true });
+      v.src = p.film;
+      pic.append(v);
+      p.video = v;
+      v.play().catch(() => {});
+    }
+  }
+  function unload(p) {
+    if (!p.video) return;
+    p.video.pause(); p.video.removeAttribute('src'); p.video.load(); p.video.remove(); p.video = null;
+  }
+
+  // ---- The notes.
+  let panelToken = 0;
+  function setPanel(html) {
+    const token = ++panelToken;
+    const swap = () => {
+      if (token !== panelToken) return;
+      panel.innerHTML = html;
+      [...panel.children].forEach((c, i) => c.style.setProperty('--i', i));
+      panel.classList.remove('out', 'in');
+      panel.classList.add('on');
+      panel.scrollTop = 0;
+      requestAnimationFrame(() => requestAnimationFrame(() => { if (token === panelToken) panel.classList.add('in'); }));
+    };
+    if (panel.classList.contains('in') && !still) { panel.classList.add('out'); setTimeout(swap, 240); } else swap();
+  }
+  function panelOff() {
+    const token = ++panelToken;
+    panel.classList.add('out');
+    setTimeout(() => { if (token === panelToken) panel.classList.remove('on', 'in', 'out'); }, still ? 0 : 300);
+  }
+  const step = (n, i, label) => `<div class="p-head"><span>${label} ${pad(i + 1)} / ${pad(n)}</span><span class="p-step"><button type="button" data-step="-1" aria-label="Previous">←</button><button type="button" data-step="1" aria-label="Next">→</button></span></div>`;
+  function projectNotes(pr) {
+    return step(PROJECTS.length, pr.n, 'Project') +
+      `<h2 class="p-title">${pr.name}</h2>` +
+      `<p class="p-tags">${pr.tags}</p>` +
+      `<p class="p-text">${pr.about}</p>` +
+      `<ol class="p-list">${pr.pieces.map((p, i) => `<li><a href="${link({ view: 'piece', project: pr, piece: p })}" data-piece="${p.id}"><span class="k">${pad(i + 1)}</span><span>${p.title}</span><span class="k">${p.film ? 'Film' : ''}</span></a></li>`).join('')}</ol>` +
+      `<div class="p-cta"><a class="item" href="../work/${pr.id}/">Read the case study ↗</a></div>`;
+  }
+  function pieceNotes(pr, p) {
+    return step(pr.pieces.length, p.i, 'Piece') +
+      `<h2 class="p-title">${p.title}</h2>` +
+      `<p class="p-tags">${p.film ? 'Film' : 'Still'}</p>` +
+      `<p class="p-text">${p.text}</p>` +
+      `<div class="p-part"><span>Part of</span><a href="${link({ view: 'project', project: pr })}">${pr.name}</a></div>` +
+      `<div class="p-cta"><a class="item" href="${link({ view: 'project', project: pr })}">The whole project</a><a class="item" href="../work/${pr.id}/">Read the case study ↗</a></div>`;
+  }
+
+  // ---- Views.
+  let view = null, cur = { view: null }, fromField = null, fieldTimer = 0;
+  function show(r, { push = false, instant = false } = {}) {
+    const prev = cur;
+    if (push) history.pushState({ archive: true }, '', link(r));
+    cur = r; view = r.view;
+    document.title = titleFor(r);
+    archive.className = `archive v-${view}`;
+    bar.dataset.view = view;
+    bar.querySelectorAll('.switch .item').forEach(a => {
+      if (a.dataset.view === (view === 'field' ? 'field' : 'projects')) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+    if (r.project) {
+      const crumb = $('#crumb-project');
+      crumb.hidden = view !== 'piece';
+      crumb.textContent = r.project.name;
+      crumb.href = link({ view: 'project', project: r.project });
+    }
+    hover(null); hoverPrint(null);
+    PIECES.forEach(p => p.el.classList.remove('main'));
+    marker.classList.remove('on');
+    clearTimeout(fieldTimer);
+    const dur = instant || still ? 0 : 900;
+
+    if (view === 'field') {
+      labelsEl.classList.remove('on');
+      panelOff();
+      if (prev.view && prev.view !== 'field') {
+        // The prints fly back onto their nearest copies (an opened piece to the very copy it came
+        // from) and the field fades up under them.
+        const reps = fieldRects();
+        if (fromField && prev.piece === fromField.piece) reps.set(fromField.piece, fromField.rect);
+        apply(reps, { dur, exit: { dur: 300 } });
+        fieldTimer = setTimeout(() => {
+          field.classList.remove('off');
+          fieldTimer = setTimeout(() => PIECES.forEach(hideNow), 380);
+        }, dur * 0.8);
+      } else field.classList.remove('off');
+      fromField = null;
+      field.focus({ preventScroll: true });
+      return;
+    }
+
+    // Leaving the field, the prints take over from the copies nearest the middle (an opened piece
+    // from the one clicked); the rest of the field fades out under them before they fly.
+    let from = null, wait = 0;
+    if (prev.view === 'field') {
+      from = fieldRects();
+      if (r.cell) { from.set(r.piece, r.cell); fromField = { piece: r.piece, rect: r.cell }; }
+      field.classList.add('off');
+      wait = dur ? 260 : 0;
+    }
+    const layout = layoutFor(r);
+    const same = prev.project && r.project && prev.project === r.project;
+    const dir = r.project && prev.project && !same ? Math.sign(r.project.n - prev.project.n) : 0;
+
+    if (view === 'projects') {
+      panelOff();
+      apply(layout, { from, dur: from ? dur * 1.2 : dur, delay: p => wait + (from ? p.project.n * 45 + p.i * 12 : 0) });
+      labelsEl.classList.remove('on');
+      setTimeout(() => { if (view === 'projects') labelsEl.classList.add('on'); }, dur ? wait + dur * 0.7 : 0);
+      return;
+    }
+
+    labelsEl.classList.remove('on');
+    if (r.piece) r.piece.el.classList.add('main');
+    // Between projects, the old one slides off one way and the new one in from the other.
+    const shift = dir * (phone ? 40 : 80);
+    apply(layout, {
+      from, dur,
+      delay: p => wait + (dir ? 160 + p.i * 25 : 0),
+      enter: dir ? { dx: shift, dy: 0 } : { dx: 0, dy: 18 },
+      exit: dir ? { dx: -shift, dur: 320 } : {},
+    });
+    if (view === 'project') setPanel(projectNotes(r.project));
+    else {
+      setPanel(pieceNotes(r.project, r.piece));
+      marker.classList.add('on');
+      setTimeout(() => { if (cur === r) load(r.piece); }, dur ? wait + dur * 0.6 : 0);
+    }
+    if (!fromField || r.project !== fromField.piece.project) fromField = null;
+  }
+  const go = r => show(r, { push: true });
+  function back() {
+    if (view === 'piece') go(fromField && fromField.piece === cur.piece ? { view: 'field' } : { view: 'project', project: cur.project });
+    else if (view === 'project') go({ view: 'projects' });
+    else if (view === 'projects') go({ view: 'field' });
+  }
+  function stepBy(n) {
+    if (view === 'project') go({ view: 'project', project: PROJECTS[mod(cur.project.n + n, PROJECTS.length)] });
+    else if (view === 'piece') { const ps = cur.project.pieces; go({ view: 'piece', project: cur.project, piece: ps[mod(cur.piece.i + n, ps.length)] }); }
+  }
+  addEventListener('popstate', () => show(parse(location.search)));
+
+  // Clicks: the prints and labels open what they show; links within the archive change view in
+  // place; links out go through the cover, as on the other pages.
+  prints.addEventListener('click', e => {
+    const el = e.target.closest('.print');
+    if (!el || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    e.preventDefault();
+    const p = el.piece;
+    if (view === 'projects') go({ view: 'project', project: p.project });
+    else if (view === 'project' || (view === 'piece' && p !== cur.piece)) go({ view: 'piece', project: p.project, piece: p });
+  });
+  panel.addEventListener('click', e => {
+    const b = e.target.closest('[data-step]');
+    if (b) stepBy(+b.dataset.step);
+  });
+  document.addEventListener('click', e => {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const a = e.target.closest('a[href]');
+    if (!a || a.origin !== location.origin || a.pathname !== location.pathname) return;
+    e.preventDefault();
+    const r = parse(a.search);
+    if (r.view !== view || r.project !== cur.project || r.piece !== cur.piece) go(r);
+    else if (r.view === 'field') recenter();
+  });
+
+  // Hovering a print or a label: in the collages, the project lights and the others dim; in a
+  // project, the piece and its line in the notes.
+  let hoveredPrint = null;
+  function hoverPrint(el, project) {
+    if (hoveredPrint) hoveredPrint.classList.remove('hover');
+    hoveredPrint = el;
+    project = project || (el && el.piece.project);
+    const piece = el && el.piece;
+    const dim = view === 'projects' ? !!project : view === 'project' && !!piece;
+    archive.classList.toggle('dim', dim);
+    labelsEl.classList.toggle('dim', dim && view === 'projects');
+    PIECES.forEach(p => p.el.classList.toggle('lit', view === 'projects' ? p.project === project : p === piece));
+    labels.forEach(l => l.classList.toggle('lit', l.project === project));
+    panel.querySelectorAll('[data-piece]').forEach(a => a.classList.toggle('lit', !!piece && a.dataset.piece === piece.id));
+    if (el && !(view === 'piece' && piece === cur.piece)) el.classList.add('hover');
+    if (view === 'projects' && project) setTag(`( Open ${project.name} )`);
+    else if (piece && !(view === 'piece' && piece === cur.piece)) setTag(`( ${piece.title} )`);
+    else setTag(null);
+  }
+  prints.addEventListener('pointerover', e => { if (e.pointerType === 'mouse') { trail.x = e.clientX; trail.y = e.clientY; hoverPrint(e.target.closest('.print')); } });
+  prints.addEventListener('pointerout', e => { if (!(e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('.print'))) hoverPrint(null); });
+  labelsEl.addEventListener('pointerover', e => { const l = e.target.closest('.plabel'); if (l && e.pointerType === 'mouse') hoverPrint(null, l.project); });
+  labelsEl.addEventListener('pointerout', e => { if (!(e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('.plabel'))) hoverPrint(null); });
+  panel.addEventListener('pointerover', e => {
+    const a = e.target.closest('[data-piece]');
+    if (view === 'project' && a) { const p = cur.project.pieces.find(x => x.id === a.dataset.piece); hoverPrint(p.el); setTag(null); }
+  });
+  panel.addEventListener('pointerout', e => { if (view === 'project' && e.target.closest('[data-piece]')) hoverPrint(null); });
+
+  // The trailing tag.
+  const trail = { x: 0, y: 0, tx: 0, ty: 0, on: false };
+  function setTag(text) {
+    if (text) { if (!trail.on) { trail.tx = trail.x; trail.ty = trail.y; } tag.textContent = text; }
+    trail.on = !!text;
+    tag.classList.toggle('on', trail.on);
+  }
+  addEventListener('pointermove', e => { trail.x = e.clientX; trail.y = e.clientY; }, { passive: true });
+
+  // Keys: arrows pan the field and step through projects and pieces; plus and minus zoom; Escape
+  // goes back up a level.
+  addEventListener('keydown', e => {
+    if (e.metaKey || e.ctrlKey || e.altKey || e.target.closest('input, textarea')) return;
+    if (view === 'field') {
+      const pan = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
+      if (pan) { e.preventDefault(); const t = tween ? tween.to : cam; glide({ x: t.x + pan[0] * 220 / cam.s, y: t.y + pan[1] * 220 / cam.s }, 320); }
+      else if (e.key === '+' || e.key === '=') zoomTo((tween ? tween.to.s : cam.s) * 1.25, vw / 2, vh / 2, 320);
+      else if (e.key === '-' || e.key === '_') zoomTo((tween ? tween.to.s : cam.s) * 0.8, vw / 2, vh / 2, 320);
+      else if (e.key === '0' || e.key === 'Home') recenter();
+      return;
+    }
+    if (e.key === 'Escape') back();
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); stepBy(e.key === 'ArrowLeft' ? -1 : 1); }
+  });
+
+  // The plain index.
+  $('#index').innerHTML = `<ul>${PROJECTS.map(pr => `<li><a href="${link({ view: 'project', project: pr })}">${pr.name}</a><ul>${pr.pieces.map(p => `<li><a href="${link({ view: 'piece', project: pr, piece: p })}">${p.title}</a></li>`).join('')}</ul></li>`).join('')}</ul>`;
+
+  // A resize lays the current view out again where it stands.
+  addEventListener('resize', () => {
+    measure();
+    const layout = layoutFor(cur);
+    if (layout) layout.forEach((to, p) => fly(p, to, { dur: 0 }));
+  });
+
+  // ---- Page transition: a black cover fades over on the way out and off on the way in.
+  const cover = $('#cover'), page = $('#page');
+  const arriving = sessionStorage.getItem('transition') === '1';
+  sessionStorage.removeItem('transition');
+  if (arriving && !still) {
+    cover.classList.add('on');
+    requestAnimationFrame(() => requestAnimationFrame(() => { cover.classList.remove('on'); page.classList.add('in'); }));
+  } else {
+    page.classList.add('in');
+  }
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href]');
+    if (!a || a.target === '_blank' || still || e.defaultPrevented) return;
+    const href = a.getAttribute('href');
+    if (!href || href.startsWith('#') || a.origin !== location.origin) return;
+    if (a.pathname === location.pathname) return;
+    e.preventDefault();
+    sessionStorage.setItem('transition', '1');
+    cover.classList.add('on');
+    setTimeout(() => { location.href = a.href; }, 600);
+  });
+  addEventListener('pageshow', e => { if (e.persisted) { cover.classList.remove('on'); page.classList.add('in'); } });
+
+  // The name is sized as on the homepage: its capitals run from the menu labels' cap line down to
+  // the menu rule, and it shifts so they line up. Phones hide the menu and keep the CSS size.
+  const top = $('.top'), nameEl = top.querySelector('.name'), nameB = nameEl.querySelector('b');
+  const metric = document.createElement('canvas').getContext('2d');
+  function capMetrics(el, size) {
+    const cs = getComputedStyle(el);
+    metric.font = `${cs.fontWeight} ${size}px ${cs.fontFamily}`;
+    const m = metric.measureText('H');
+    return { ascent: m.fontBoundingBoxAscent, cap: m.actualBoundingBoxAscent };
+  }
+  function capTop(textNode, el) {
+    const range = document.createRange();
+    range.selectNodeContents(textNode);
+    const { ascent, cap } = capMetrics(el, parseFloat(getComputedStyle(el).fontSize));
+    return range.getBoundingClientRect().top + ascent - cap;
+  }
+  function fitName() {
+    const label = top.querySelector('.item');
+    nameEl.style.fontSize = ''; nameEl.style.top = '0px';   // measured unshifted
+    if (!label.offsetParent) return;
+    const labelText = [...label.childNodes].find(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim());
+    const rule = label.getBoundingClientRect().bottom - 1;      // top of the 1px rule
+    const capStart = capTop(labelText, label);
+    nameEl.style.fontSize = (rule - capStart) / (capMetrics(nameB, 100).cap / 100) + 'px';
+    nameEl.style.top = capStart - capTop(nameB.firstChild, nameB) + 'px';
+  }
+  addEventListener('resize', fitName);
+  document.fonts.ready.then(fitName);
+
+  // The finish's grain, as on the contact page: a 128 px tile of random grey at 12/255 (10 on
+  // phones), re-rolled every 8 frames and repeated over a window-sized canvas. It holds still for
+  // reduced motion.
+  const grain = $('.finish canvas'), grainCtx = grain.getContext('2d');
+  const grainTile = document.createElement('canvas');
+  grainTile.width = grainTile.height = 128;
+  const tileCtx = grainTile.getContext('2d'), noise = tileCtx.createImageData(128, 128);
+  let grainAge = 0, grainDrawn = false;
+  function sizeGrain() { grain.width = innerWidth; grain.height = innerHeight; grainDrawn = false; }
+  function tickGrain() {
+    if (grainDrawn && (still || ++grainAge % 8)) return;
+    const alpha = innerWidth <= 767 ? 10 : 12;
+    for (let i = 0; i < noise.data.length; i += 4) {
+      noise.data[i] = noise.data[i + 1] = noise.data[i + 2] = 255 * Math.random();
+      noise.data[i + 3] = alpha;
+    }
+    tileCtx.putImageData(noise, 0, 0);
+    grainCtx.clearRect(0, 0, grain.width, grain.height);
+    grainCtx.fillStyle = grainCtx.createPattern(grainTile, 'repeat');
+    grainCtx.fillRect(0, 0, grain.width, grain.height);
+    grainDrawn = true;
+  }
+  sizeGrain();
+  addEventListener('resize', sizeGrain);
+
+  // ---- The frame loop: camera glides and flings, the field, the tag, the grain.
+  let last = performance.now();
+  function frame(now) {
+    const dt = Math.min(64, now - last); last = now;
+    if (tween) {
+      const t = Math.min(1, (now - tween.t0) / tween.dur), k = quartOut(t);
+      for (const key of ['x', 'y', 's']) cam[key] = tween.from[key] + (tween.to[key] - tween.from[key]) * k;
+      if (t >= 1) tween = null;
+      dirty = true;
+    }
+    if (inertia) {
+      cam.x -= inertia.vx * dt / cam.s; cam.y -= inertia.vy * dt / cam.s;
+      const f = Math.exp(-dt / 325);
+      inertia.vx *= f; inertia.vy *= f;
+      if (Math.hypot(inertia.vx, inertia.vy) < 0.02) inertia = null;
+      dirty = true;
+    }
+    if (dirty) { renderField(); dirty = false; }
+    if (trail.on) {
+      trail.tx += (trail.x - trail.tx) * 0.2; trail.ty += (trail.y - trail.ty) * 0.2;
+      tag.style.transform = `translate(${trail.tx}px, ${trail.ty}px) translate(-50%, -50%)`;
+    }
+    tickGrain();
+    requestAnimationFrame(frame);
+  }
+
+  // ---- Start: the field fills from the middle out, or the view in the address arrives in place.
+  measure();
+  cam.s = s0;
+  const first = parse(location.search);
+  renderField(); dirty = false;
+  if (first.view !== 'field') { intro = false; field.classList.add('off', 'ready', 'settled'); }
+  else requestAnimationFrame(() => requestAnimationFrame(() => field.classList.add('ready')));
+  setTimeout(() => { intro = false; field.classList.add('settled'); cells.forEach(c => { c.style.transitionDelay = ''; }); }, 2200);
+  history.replaceState({ archive: true }, '', link(first));
+  show(first);
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
