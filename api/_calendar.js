@@ -22,9 +22,10 @@ const num = (v, d) => (Number.isFinite(parseFloat(v)) ? parseFloat(v) : d);
 const NOTICE = num(process.env.BOOKING_NOTICE_HOURS, 12) * 3600e3;    // nothing sooner than this
 const BUFFER = num(process.env.BOOKING_BUFFER_MINUTES, 15) * 60e3;    // clear time around other meetings
 const DAYS_AHEAD = num(process.env.BOOKING_DAYS_AHEAD, 14);
-const HOURS = parseHours(process.env.BOOKING_HOURS || 'mon-fri 10:00-19:00');
+const HOURS = parseHours(process.env.BOOKING_HOURS || 'mon-fri 14:00-24:00');   // 2 pm to midnight in Bengaluru
 
-// "mon-fri 10:00-19:00; sat 11:00-13:00" -> { 1: [[600, 1140]], ..., 6: [[660, 780]] } (minutes, in ZONE).
+// "mon-fri 14:00-24:00; sat 11:00-13:00" -> { 1: [[840, 1440]], ..., 6: [[660, 780]] } (minutes, in ZONE).
+// 24:00 is midnight at the end of the day.
 function parseHours(text) {
   const DAY = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
   const hours = {};
@@ -34,7 +35,7 @@ function parseHours(text) {
     const from = DAY.indexOf(m[1]), to = DAY.indexOf(m[2] || m[1]);
     if (from < 0 || to < 0) continue;
     for (let d = from; ; d = (d + 1) % 7) {
-      (hours[d] ||= []).push([+m[3] * 60 + +m[4], +m[5] * 60 + +m[6]]);
+      (hours[d] ||= []).push([+m[3] * 60 + +m[4], Math.min(+m[5] * 60 + +m[6], 1440)]);
       if (d === to) break;
     }
   }
