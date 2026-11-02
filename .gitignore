@@ -1,4 +1,4 @@
-# Publish only the page, its video, its media, the case studies, the contact page and the archive; everything else here stays local.
+# Publish only the page, its video, its media, the case studies, the contact page, the archive and the private pitch pages (for/); everything else here stays local.
 *
 !.gitignore
 !.env.example
@@ -17,3 +17,5 @@
 .env
 !api/
 !api/**
+!for/
+!for/**

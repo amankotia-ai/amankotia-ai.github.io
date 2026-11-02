@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Hesper AI, on film</title>
+<meta property="og:title" content="Hesper AI, on film">
+<meta property="og:type" content="video.other">
+<meta property="og:url" content="https://www.amankotia.com/for/hesper/">
+<meta property="og:image" content="https://www.amankotia.com/for/hesper/poster.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="675">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Hesper AI, on film">
+<meta name="twitter:image" content="https://www.amankotia.com/for/hesper/poster.jpg">
+<link rel="icon" href="data:,">
+<style>
+  /* the film's own ground (Hesper's #14130F), so the frame's edges disappear */
+  html, body { margin: 0; height: 100%; background: #14130f; overflow: hidden; }
+  video { position: fixed; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #14130f; }
+</style>
+</head>
+<body>
+<video src="film.mp4" autoplay muted loop playsinline preload="auto"></video>
+<script>
+  // where autoplay is blocked (iOS Low Power Mode), fall back to the browser's own play control
+  const v = document.querySelector('video');
+  v.play().catch(() => { v.controls = true; });
+</script>
+</body>
+</html>
