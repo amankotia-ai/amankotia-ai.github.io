@@ -1,11 +1,15 @@
 // Google Calendar for the contact page's 30 minute calls: the open times, and the booking itself.
 // Not an endpoint (Vercel skips files in api/ that start with an underscore); /api/slots and
 // /api/brief use it.
-// It acts as Abhishek's Google account through an OAuth refresh token held only in environment
-// variables on Vercel (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REFRESH_TOKEN); the page never
-// sees them. Scopes: calendar.freebusy (busy times only, never what the events are) and
-// calendar.events (to write the booking). The OAuth app must be published "In production", or
-// Google expires the refresh token after seven days.
+// It reaches Abhishek's calendar one of two ways, both set only in environment variables on Vercel
+// (the page never sees them):
+// - through an Apps Script web app running as him (tools/calendar-bridge.gs), with
+//   GOOGLE_APPS_SCRIPT_URL and GOOGLE_APPS_SCRIPT_SECRET; no Google Cloud project needed. Used
+//   whenever the URL is set.
+// - or directly, with an OAuth refresh token (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET,
+//   GOOGLE_REFRESH_TOKEN; tools/google-refresh-token.mjs). Scopes: calendar.freebusy (busy times
+//   only, never what the events are) and calendar.events (to write the booking). The OAuth app must
+//   be published "In production", or Google expires the refresh token after seven days.
 // A time is open when it falls inside the booking hours and no calendar in GOOGLE_BUSY_CALENDARS
 // is busy within the buffer either side: meetings, blocks, focus time and out of office all count,
 // as do all-day events marked Busy. Bookings land in GOOGLE_CALENDAR_ID with a Meet link, and
@@ -42,7 +46,10 @@ function parseHours(text) {
   return hours;
 }
 
-const configured = () => Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.GOOGLE_REFRESH_TOKEN);
+const BRIDGE = process.env.GOOGLE_APPS_SCRIPT_URL;
+const configured = () => Boolean(BRIDGE
+  ? process.env.GOOGLE_APPS_SCRIPT_SECRET
+  : process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.GOOGLE_REFRESH_TOKEN);
 
 // Wall-clock time in ZONE to an instant. Two passes settle the offset across a DST change.
 const wall = new Intl.DateTimeFormat('en-US', {
@@ -91,10 +98,38 @@ async function google(method, path, data) {
   return json;
 }
 
+// The Apps Script bridge answers { result } or { error: { status, message } }. Google answers the
+// web app's POST with a redirect to the output, which fetch follows.
+async function bridge(req) {
+  const res = await fetch(BRIDGE, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...req, secret: process.env.GOOGLE_APPS_SCRIPT_SECRET }),
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok || json.error || !('result' in json)) {
+    const status = json.error?.status || (res.ok ? 502 : res.status);
+    throw Object.assign(new Error(`Calendar bridge ${req.op}: ${status} ${json.error?.message || ''}`.trim()), { status });
+  }
+  return json.result;
+}
+
+// The three calendar calls this needs, by whichever route is set up.
+const cal = encodeURIComponent(BOOK_INTO);
+const api = {
+  freeBusy: body => (BRIDGE ? bridge({ op: 'freeBusy', body }) : google('POST', '/freeBusy', body)),
+  getEvent: id => (BRIDGE
+    ? bridge({ op: 'getEvent', calendarId: BOOK_INTO, eventId: id })
+    : google('GET', `/calendars/${cal}/events/${id}`)),
+  insertEvent: (body, params) => (BRIDGE
+    ? bridge({ op: 'insertEvent', calendarId: BOOK_INTO, body, params })
+    : google('POST', `/calendars/${cal}/events?${new URLSearchParams(params)}`, body)),
+};
+
 // Busy intervals across every checked calendar, widened by the buffer. A calendar that can't be
 // read fails the whole check: better to offer no times than a time that isn't free.
 async function busy(from, to) {
-  const json = await google('POST', '/freeBusy', {
+  const json = await api.freeBusy({
     timeMin: new Date(from).toISOString(), timeMax: new Date(to).toISOString(), items: CHECK.map(id => ({ id })),
   });
   const out = [];
@@ -131,11 +166,10 @@ async function book({ start, name, email, serial, summary, description }) {
   if (!Number.isFinite(ms)) throw Object.assign(new Error('Not a time.'), { taken: true });
   const iso = new Date(ms).toISOString(), end = new Date(ms + MINUTES * 60e3).toISOString();
   const id = createHash('sha256').update(`${serial}|${email}|${iso}`).digest('hex').slice(0, 32);
-  const cal = encodeURIComponent(BOOK_INTO);
   const result = e => ({ start: iso, end, zone: ZONE, meet: e.hangoutLink || '', event: e.htmlLink || '' });
 
   if (!(await openSlots()).includes(iso)) {
-    const mine = await google('GET', `/calendars/${cal}/events/${id}`).catch(() => null);
+    const mine = await api.getEvent(id).catch(() => null);
     if (mine && mine.status !== 'cancelled') return result(mine);
     throw Object.assign(new Error('Slot is not open.'), { taken: true });
   }
@@ -147,15 +181,14 @@ async function book({ start, name, email, serial, summary, description }) {
     reminders: { useDefault: true },
     extendedProperties: { private: { source: 'amankotia.com/contact', brief: serial } },
   };
-  const insert = `/calendars/${cal}/events?sendUpdates=all`;
   try {
-    return result(await google('POST', `${insert}&conferenceDataVersion=1`, {
+    return result(await api.insertEvent({
       ...event, conferenceData: { createRequest: { requestId: id, conferenceSolutionKey: { type: 'hangoutsMeet' } } },
-    }));
+    }, { sendUpdates: 'all', conferenceDataVersion: 1 }));
   } catch (err) {
-    if (err.status === 409) return result(await google('GET', `/calendars/${cal}/events/${id}`));
+    if (err.status === 409) return result(await api.getEvent(id));
     // An account that can't make Meet links still gets the booking, without one.
-    if (err.status === 400) { console.error(err.message); return result(await google('POST', insert, event)); }
+    if (err.status === 400) { console.error(err.message); return result(await api.insertEvent(event, { sendUpdates: 'all' })); }
     throw err;
   }
 }
