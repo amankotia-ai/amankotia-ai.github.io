@@ -5,6 +5,10 @@
 // on the deal and on the person, and a task assigned to Abhishek.
 // Token scopes: record_permission:read-write, object_configuration:read, note:read-write,
 // task:read-write, user_management:read.
+// A brief that rings a time (slot) also books a 30 minute call in Google Calendar (api/_calendar.js)
+// before it is filed; the call's time goes in the note and the task.
+
+const calendar = require('./_calendar');
 
 const ATTIO = 'https://api.attio.com/v2';
 const OWNER = process.env.ATTIO_OWNER_EMAIL || 'hello@amankotia.com';
@@ -48,8 +52,36 @@ function readBrief(body) {
     timeline: clip(b.timeline, 40),
     message: clip(b.message, 5000),
     serial: clip(String(b.serial ?? ''), 20),
+    slot: clip(b.slot, 40),
+    zone: zoneOf(clip(b.zone, 60)),
     botcheck: b.botcheck === true,
   };
+}
+
+// The visitor's time zone, when it is one Intl knows.
+function zoneOf(tz) {
+  try { return tz ? new Intl.DateTimeFormat('en-GB', { timeZone: tz }).resolvedOptions().timeZone : ''; }
+  catch (e) { return ''; }
+}
+// "Tue 4 Nov, 15:30 (Bengaluru), 10:00 (London)"; the visitor's date shows only when it differs.
+function callTime(iso, zone) {
+  const at = tz => new Intl.DateTimeFormat('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: tz }).format(new Date(iso));
+  const city = tz => (tz === 'Asia/Kolkata' ? 'Bengaluru' : (tz.split('/').pop() || tz).replace(/_/g, ' '));
+  const mine = at(calendar.ZONE), theirs = zone ? at(zone) : mine;
+  if (theirs === mine) return `${mine} (${city(calendar.ZONE)})`;
+  const sameDay = theirs.split(', ')[0] === mine.split(', ')[0];
+  return `${mine} (${city(calendar.ZONE)}), ${sameDay ? theirs.split(', ')[1] : theirs} (${city(zone)})`;
+}
+
+// The brief as label and value pairs, for the Attio note and the calendar invite.
+function briefLines(b) {
+  return [
+    ['Needs', b.needs.join(', ') || 'Not given'],
+    ['Budget', b.budget || 'Not given'],
+    ['Timeline', b.timeline || 'Not given'],
+    ['Company website', b.company || 'Not given'],
+    ['From', `${b.name}, ${b.email}`],
+  ];
 }
 
 async function attio(method, path, data) {
@@ -65,7 +97,7 @@ async function attio(method, path, data) {
 
 const ref = (object, id) => [{ target_object: object, target_record_id: id }];
 
-async function file(b) {
+async function file(b, call) {
   const domain = domainOf(b.company);
   const company = domain
     ? await attio('PUT', '/objects/companies/records?matching_attribute=domains', { values: { domains: [domain] } })
@@ -109,11 +141,8 @@ async function file(b) {
   const dealId = deal.id.record_id;
 
   const lines = [
-    `**Needs:** ${b.needs.join(', ') || 'Not given'}`,
-    `**Budget:** ${b.budget || 'Not given'}`,
-    `**Timeline:** ${b.timeline || 'Not given'}`,
-    `**Company website:** ${b.company || 'Not given'}`,
-    `**From:** ${b.name}, ${b.email}`,
+    ...briefLines(b).map(([k, v]) => `**${k}:** ${v}`),
+    ...(call ? [`**Call:** ${callTime(call.start, b.zone)}${call.meet ? `, ${call.meet}` : ''}`] : []),
     b.message ? `**Message:**\n\n${b.message}` : '**Message:** none',
     `Sent from the contact page, brief No. ${b.serial}.`,
   ];
@@ -122,10 +151,14 @@ async function file(b) {
   await attio('POST', '/notes', { parent_object: 'deals', parent_record_id: dealId, ...note });
   await attio('POST', '/notes', { parent_object: 'people', parent_record_id: personId, ...note });
 
+  // A booked call is due when it starts; a plain brief wants a reply within a day.
+  const about = `${b.needs.join(', ') || 'a project'}; budget ${b.budget || 'not given'}; timeline ${b.timeline || 'not given'}.`;
   await attio('POST', '/tasks', {
-    content: clip(`Reply to ${b.name} (${b.email}): new brief for ${b.needs.join(', ') || 'a project'}; budget ${b.budget || 'not given'}; timeline ${b.timeline || 'not given'}.`, 2000),
+    content: clip(call
+      ? `Call with ${b.name} (${b.email}) on ${callTime(call.start, '')}: brief for ${about}`
+      : `Reply to ${b.name} (${b.email}): new brief for ${about}`, 2000),
     format: 'plaintext',
-    deadline_at: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
+    deadline_at: call ? call.start : new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
     is_completed: false,
     linked_records: ref('deals', dealId),
     assignees: [{ workspace_member_email_address: OWNER }],
@@ -151,17 +184,40 @@ async function handler(req, res) {
   if (!b.name || !EMAIL_RE.test(b.email) || !b.needs.length) {
     return res.status(400).json({ ok: false, error: 'A name, a valid email and at least one need are required.' });
   }
-  if (!process.env.ATTIO_API_KEY) return res.status(500).json({ ok: false, error: 'Not configured.' });
+  if (!b.slot && !process.env.ATTIO_API_KEY) return res.status(500).json({ ok: false, error: 'Not configured.' });
+
+  // The call first: if the time has gone, nothing is filed and the page offers the times that are left.
+  let call = null;
+  if (b.slot) {
+    if (!calendar.configured()) return res.status(503).json({ ok: false, error: 'Booking is not set up.' });
+    try {
+      call = await calendar.book({
+        start: b.slot, name: b.name, email: b.email, serial: b.serial,
+        summary: `Abhishek Mankotia and ${b.name}`,
+        description: [
+          ...briefLines(b).map(([k, v]) => `${k}: ${v}`),
+          ...(b.message ? ['', b.message] : []),
+          '', `Booked on amankotia.com/contact, brief No. ${b.serial}.`,
+        ].join('\n'),
+      });
+    } catch (err) {
+      if (err.taken) return res.status(409).json({ ok: false, taken: true, error: 'That time is no longer free.' });
+      console.error(err.message);
+      return res.status(502).json({ ok: false, error: 'Could not book the call.' });
+    }
+  }
 
   try {
-    await file(b);
-    return res.status(200).json({ ok: true });
+    if (process.env.ATTIO_API_KEY) await file(b, call);
   } catch (err) {
     console.error(err.message);
-    return res.status(502).json({ ok: false, error: 'Could not file the brief.' });
+    // A booked call already holds the brief in its invite, so only a plain brief has failed.
+    if (!call) return res.status(502).json({ ok: false, error: 'Could not file the brief.' });
   }
+  return res.status(200).json({ ok: true, ...(call ? { call: { start: call.start, end: call.end, meet: call.meet } } : {}) });
 }
 
 module.exports = handler;
 module.exports.domainOf = domainOf;
 module.exports.readBrief = readBrief;
+module.exports.callTime = callTime;

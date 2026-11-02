@@ -185,6 +185,19 @@
   .ring { position: absolute; left: -12px; top: -8px; width: calc(100% + 24px); height: calc(100% + 16px); overflow: visible; pointer-events: none; }
   .ring .pen { stroke-width: 1.5; transition-duration: .5s; }
 
+  /* The call: ring a day, then a time, both printed in the visitor's own time zone. */
+  .q-note { margin: -4px 0 24px; max-width: 34em; font: 400 12px/1.5 var(--mono); color: var(--ink-2); }
+  .days { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 20px 8px; }
+  .day { justify-self: center; }
+  .day .t { display: flex; flex-direction: column; align-items: center; gap: 4px; white-space: nowrap; }
+  .day .t small, .zone { font: 400 10.5px/1 var(--mono); text-transform: uppercase; letter-spacing: 0.02em; color: var(--ink-2); }
+  .zone { margin: 30px 0 18px; }
+  .times { font-variant-numeric: tabular-nums; }
+  .times-hint { margin: 0; font: 400 12px/1.3 var(--mono); color: var(--ink-2); }
+  .picked { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; margin: 26px 0 0; font: 400 12px/1.5 var(--mono); color: var(--pen); }
+  .clear { padding: 0; border: 0; background: none; color: var(--ink-2); font: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+  .clear:focus-visible { outline: 1px dashed var(--ink); outline-offset: 3px; }
+
   /* Ruled fields: the label printed above, the answer written on the rule. */
   .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 26px 24px; }
   .field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
@@ -412,6 +425,7 @@
           <div><dt>Budget</dt><dd data-r="budget"></dd></div>
           <div><dt>Timeline</dt><dd data-r="timeline"></dd></div>
           <div><dt>Company</dt><dd data-r="company"></dd></div>
+          <div data-r-call hidden><dt>Call</dt><dd data-r="call"></dd></div>
           <div><dt>Reply to</dt><dd data-r="email"></dd></div>
         </dl>
         <p class="r-note carbon" data-r="note"></p>
@@ -476,6 +490,20 @@
               <label class="field wide"><span class="lbl print">Tell me about it (optional)</span><textarea name="message" rows="4"></textarea></label>
             </div>
           </fieldset>
+
+          <!-- Shown once /api/slots answers with my open times. -->
+          <fieldset class="q" id="q-call" aria-describedby="err-call" hidden>
+            <legend class="print"><span class="n">05</span>Rather talk it through?<span class="hint">Optional</span></legend>
+            <div data-call-open>
+              <p class="q-note print">Ring a day and a time, and a 30 minute call goes straight into my calendar with a Google Meet link. Leave it and I'll write back instead.</p>
+              <div class="days" data-days role="group" aria-label="Day"></div>
+              <p class="zone print" data-zone></p>
+              <div class="opts times" data-times role="group" aria-label="Time"></div>
+              <p class="picked" data-picked hidden><span></span><button class="clear" type="button" data-clear>Clear</button></p>
+            </div>
+            <p class="q-note print" data-call-none hidden>No open times in the next two weeks. Send the brief and I'll write back with some.</p>
+            <p class="err" id="err-call" hidden></p>
+          </fieldset>
           <input class="hp" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true">
 
           <div class="tear" aria-hidden="true"></div>
@@ -498,9 +526,11 @@
 (() => {
   // Where briefs go. /api/brief is the Vercel function in api/brief.js, which files each brief
   // in Attio (it holds the Attio key; this page never does). If it can't be reached, the page
-  // offers to send the brief by email instead.
+  // offers to send the brief by email instead. /api/slots (api/slots.js) lists the open times in
+  // my Google Calendar for a 30 minute call; a brief that rings one books it as it is sent.
   const EMAIL = 'hello@amankotia.com';
   const FORM_ENDPOINT = '/api/brief';
+  const SLOTS_ENDPOINT = '/api/slots';
 
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const wait = ms => new Promise(r => setTimeout(r, ms));
@@ -611,16 +641,91 @@
   printSheet();
 
   // Each ringed option gets its own loop of pen, a slightly different shape every time.
-  form.querySelectorAll('[data-ring] .opt').forEach(opt => {
+  function ring(opt) {
     const j = () => (Math.random() - 0.5) * 6;
     const d = `M${16 + j()} ${7 + j() / 2}C${36 + j()} 1 ${82 + j()} 2 ${94 + j()} ${12 + j() / 2}C${104 + j()} ${21 + j() / 2} ${90 + j()} 34 ${57 + j()} 36C${25 + j()} 38 3 ${32 + j() / 2} 4 ${21 + j() / 2}C5 ${11 + j() / 2} ${24 + j()} 4 ${46 + j()} 4`;
     opt.insertAdjacentHTML('beforeend', `<svg class="ring" viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true"><path class="pen" pathLength="1" d="${d}"/></svg>`);
-  });
+  }
+  form.querySelectorAll('[data-ring] .opt').forEach(ring);
 
   const field = name => form.elements[name];
   const value = name => (field(name).value || '').trim();
   const needs = () => [...form.querySelectorAll('[name="need"]:checked')].map(i => i.value);
   const picked = name => form.querySelector(`[name="${name}"]:checked`)?.value || '';
+
+  // The call. The section stays hidden until /api/slots answers, and for good if my calendar isn't
+  // connected. Days and times are the visitor's own; the summary adds mine when they differ.
+  const call = document.getElementById('q-call');
+  const daysEl = call.querySelector('[data-days]'), timesEl = call.querySelector('[data-times]');
+  const pickedEl = call.querySelector('[data-picked]');
+  const inZone = o => new Intl.DateTimeFormat('en-GB', { ...o, timeZone: yourZone });
+  const dayKey = new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: yourZone });
+  const dayName = inZone({ weekday: 'short' }), dayDate = inZone({ day: 'numeric', month: 'short' });
+  const dayLong = inZone({ weekday: 'long', day: 'numeric', month: 'long' });
+  // Times in the visitor's own clock style, 15:30 or 3:30 PM.
+  const timeIn = tz => new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit', timeZone: tz });
+  const timeOf = timeIn(yourZone), myTime = timeIn('Asia/Kolkata');
+  let byDay = new Map(), callMinutes = 30;
+  call.querySelector('[data-zone]').textContent = `Your time, ${yourCode}`;
+
+  async function loadSlots() {
+    try {
+      const res = await fetch(SLOTS_ENDPOINT, { headers: { Accept: 'application/json' }, cache: 'no-store' });
+      const data = await res.json();
+      if (!res.ok || !data.ok) throw new Error(data.error || `HTTP ${res.status}`);
+      callMinutes = data.minutes || 30;
+      byDay = new Map();
+      data.slots.forEach(iso => { const k = dayKey.format(new Date(iso)); byDay.set(k, [...(byDay.get(k) || []), iso]); });
+      renderDays();
+      call.hidden = false;
+    } catch (e) { /* no calendar: the brief works as before */ }
+  }
+  function renderDays() {
+    const day = picked('day');
+    call.querySelector('[data-call-open]').hidden = !byDay.size;
+    call.querySelector('[data-call-none]').hidden = !!byDay.size;
+    daysEl.innerHTML = [...byDay].map(([k, slots]) => {
+      const d = new Date(slots[0]);
+      return `<label class="opt day"><input type="radio" name="day" value="${k}"><span class="t"><small>${dayName.format(d)}</small>${dayDate.format(d)}</span></label>`;
+    }).join('');
+    daysEl.querySelectorAll('.opt').forEach(ring);
+    // The ringed day stays ringed if it still has times.
+    const again = daysEl.querySelector(`[value="${day}"]`);
+    if (again) again.checked = true;
+    renderTimes();
+  }
+  function renderTimes() {
+    const slots = byDay.get(picked('day'));
+    timesEl.innerHTML = slots
+      ? slots.map(iso => `<label class="opt"><input type="radio" name="slot" value="${iso}"><span class="t">${timeOf.format(new Date(iso))}</span></label>`).join('')
+      : '<p class="times-hint print">Ring a day first.</p>';
+    timesEl.querySelectorAll('.opt').forEach(ring);
+    showPicked();
+  }
+  // "Tuesday 4 November, 15:30 to 16:00 your time (20:00 in Bengaluru)"
+  function callText(iso) {
+    const s = new Date(iso), e = new Date(s.getTime() + callMinutes * 60e3);
+    const mine = myTime.format(s) === timeOf.format(s) ? '' : ` (${myTime.format(s)} in Bengaluru)`;
+    return `${dayLong.format(s)}, ${timeOf.format(s)} to ${timeOf.format(e)} your time${mine}`;
+  }
+  function showPicked() {
+    const iso = picked('slot');
+    pickedEl.hidden = !iso;
+    pickedEl.querySelector('span').textContent = iso ? callText(iso) : '';
+    if (submit.getAttribute('aria-busy') !== 'true') submitLabel.textContent = idleLabel();
+  }
+  const idleLabel = () => (picked('slot') ? 'Send the brief and book the call' : 'Send the brief');
+  form.addEventListener('change', e => {
+    if (e.target.name === 'day') renderTimes();
+    if (e.target.name === 'slot') { showError('err-call', '', null); showPicked(); window.capturePostHogEvent?.('contact_call_time_picked'); }
+  });
+  call.querySelector('[data-clear]').addEventListener('click', () => {
+    const on = form.querySelector('[name="slot"]:checked');
+    if (on) on.checked = false;
+    showPicked();
+    form.querySelector('[name="slot"]')?.focus();
+  });
+  loadSlots();
 
   function showError(id, text, input) {
     const el = document.getElementById(id);
@@ -649,7 +754,7 @@
   function brief() {
     return {
       serial, name: value('name'), email: value('email'), company: value('company'), message: value('message'),
-      needs: needs(), budget: picked('budget'), timeline: picked('timeline'),
+      needs: needs(), budget: picked('budget'), timeline: picked('timeline'), slot: picked('slot'),
     };
   }
   const subjectOf = b => `Brief No. ${b.serial} from ${b.name}${b.company ? `, ${b.company}` : ''}`;
@@ -659,6 +764,7 @@
       `Budget: ${b.budget || 'Not given'}`,
       `Timeline: ${b.timeline || 'Not given'}`,
       `Company: ${b.company || 'Not given'}`,
+      ...(b.slot ? [`Call: could we talk ${callText(b.slot)}?`] : []),
       '',
       b.message || '',
       '',
@@ -675,11 +781,14 @@
       body: JSON.stringify({
         name: b.name, email: b.email, company: b.company, needs: b.needs,
         budget: b.budget, timeline: b.timeline, message: b.message, serial: b.serial,
+        slot: b.slot, zone: yourZone,
         botcheck: field('botcheck').checked,
       }),
     });
     const data = await res.json().catch(() => ({}));
+    if (res.status === 409 && data.taken) throw Object.assign(new Error(data.error), { taken: true });
     if (!res.ok || !data.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    if (data.call) { b.call = data.call; return 'booked'; }
     return 'sent';
   }
 
@@ -690,28 +799,41 @@
     const problems = validate();
     if (problems.length) { problems[0].focus(); return; }
     const b = brief();
-    submit.setAttribute('aria-busy', 'true'); submitLabel.textContent = 'Sending';
+    submit.setAttribute('aria-busy', 'true'); submitLabel.textContent = b.slot ? 'Booking' : 'Sending';
     let outcome;
     try { outcome = await deliver(b); }
     catch (err) {
-      submit.removeAttribute('aria-busy'); submitLabel.textContent = 'Send the brief';
-      status.innerHTML = `I couldn't confirm it arrived. Your answers are still here, so try again, or <a href="${mailtoOf(b)}">send it by email</a>.`;
+      submit.removeAttribute('aria-busy');
+      if (err.taken) {
+        // Someone else got there first: offer the times that are left, on the same day if it has any.
+        await loadSlots();
+        showError('err-call', 'That time has just gone. Ring another, or clear it and send the brief on its own.', null);
+        (form.querySelector('[name="slot"]') || form.querySelector('[name="day"]'))?.focus();
+        showPicked();
+        return;
+      }
+      submitLabel.textContent = idleLabel();
+      status.innerHTML = b.slot
+        ? `I couldn't book the call. Your answers are still here, so try again, clear the time and send the brief on its own, or <a href="${mailtoOf(b)}">send it by email</a>.`
+        : `I couldn't confirm it arrived. Your answers are still here, so try again, or <a href="${mailtoOf(b)}">send it by email</a>.`;
       status.hidden = false;
       return;
     }
-    window.capturePostHogEvent?.(outcome === 'sent' ? 'contact_brief_submitted' : 'contact_brief_drafted');
+    window.capturePostHogEvent?.({ sent: 'contact_brief_submitted', booked: 'contact_call_booked', drafted: 'contact_brief_drafted' }[outcome]);
     window.logPostHog?.('info', 'contact brief delivery completed', { delivery: outcome });
     // The brief has gone; whatever the tear-off animation does, the button must not stay on Sending.
     try { fillReceipt(b, outcome); await tearOff(); }
-    finally { submit.removeAttribute('aria-busy'); submitLabel.textContent = 'Send the brief'; }
+    finally { submit.removeAttribute('aria-busy'); submitLabel.textContent = idleLabel(); }
   });
 
   function fillReceipt(b, outcome) {
     const set = (k, v) => { receipt.querySelector(`[data-r="${k}"]`).textContent = v; };
     const first = b.name.split(/\s+/)[0];
     const head = receipt.querySelector('[data-r="head"]');
-    head.innerHTML = outcome === 'sent' ? 'Thanks, <b></b>.<br>Your brief is in.' : 'Almost there, <b></b>.<br>Your brief is written.';
+    head.innerHTML = { sent: 'Thanks, <b></b>.<br>Your brief is in.', booked: 'Thanks, <b></b>.<br>Your call is booked.', drafted: 'Almost there, <b></b>.<br>Your brief is written.' }[outcome];
     head.querySelector('b').textContent = first;
+    receipt.querySelector('[data-r-call]').hidden = outcome !== 'booked';
+    if (outcome === 'booked') set('call', callText(b.call.start));
     set('serial', `No. ${b.serial}`);
     set('date', dateText(new Date()));
     set('needs', b.needs.join(', '));
@@ -719,9 +841,11 @@
     set('timeline', b.timeline || 'Not given');
     set('company', b.company || 'Not given');
     set('email', b.email);
-    set('note', outcome === 'sent'
-      ? `I'll write back to ${b.email} from ${EMAIL}. This copy is yours to keep.`
-      : `It's waiting in your mail app. Send it from there and it reaches me at ${EMAIL}.`);
+    set('note', {
+      sent: `I'll write back to ${b.email} from ${EMAIL}. This copy is yours to keep.`,
+      booked: `The invite${b.call?.meet ? ', with a Google Meet link,' : ''} is on its way to ${b.email}, and I'll read your brief before we talk. This copy is yours to keep.`,
+      drafted: `It's waiting in your mail app. Send it from there and it reaches me at ${EMAIL}.`,
+    }[outcome]);
     receipt.dataset.outcome = outcome;
   }
 
@@ -750,7 +874,7 @@
 
   // A rubber stamp: the word, the date and the brief's number in a double rule.
   function stampAt(x, y, angle) {
-    const word = receipt.dataset.outcome === 'sent' ? 'RECEIVED' : 'DRAFTED';
+    const word = { sent: 'RECEIVED', booked: 'BOOKED', drafted: 'DRAFTED' }[receipt.dataset.outcome];
     const el = document.createElement('div');
     el.className = 'stamp';
     el.style.left = `${x}px`; el.style.top = `${y}px`;
@@ -776,9 +900,11 @@
   // Another brief: a fresh sheet feeds up over the copy.
   document.getElementById('again').addEventListener('click', () => {
     form.reset();
-    ['err-name', 'err-email', 'err-need'].forEach(id => showError(id, '', null));
+    ['err-name', 'err-email', 'err-need', 'err-call'].forEach(id => showError(id, '', null));
     form.querySelectorAll('[aria-invalid]').forEach(i => i.removeAttribute('aria-invalid'));
     printSheet();
+    renderTimes();
+    loadSlots();   // the time just booked is no longer open
     sheet.classList.remove('gone'); sheet.inert = false;
     receipt.setAttribute('aria-hidden', 'true'); receipt.inert = true;
     if (!still) { sheet.classList.add('fed'); setTimeout(() => sheet.classList.remove('fed'), 700); }
